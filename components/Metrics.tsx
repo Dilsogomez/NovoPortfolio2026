@@ -1,0 +1,88 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { RESULTS } from '../constants';
+import { ResultItem } from '../types';
+
+const MetricCard: React.FC<{ item: ResultItem }> = ({ item }) => {
+    const [count, setCount] = useState(0);
+    const cardRef = useRef<HTMLDivElement>(null);
+    const hasAnimated = useRef(false);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && !hasAnimated.current) {
+                hasAnimated.current = true;
+                let start = 0;
+                const end = item.value;
+                const duration = 2000;
+                const startTime = performance.now();
+
+                const animate = (currentTime: number) => {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    // Ease out quart
+                    const ease = 1 - Math.pow(1 - progress, 4);
+                    
+                    setCount(Math.floor(start + (end - start) * ease));
+
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    }
+                };
+                requestAnimationFrame(animate);
+            }
+        }, { threshold: 0.5 });
+
+        if (cardRef.current) {
+            observer.observe(cardRef.current);
+        }
+
+        return () => observer.disconnect();
+    }, [item.value]);
+
+    return (
+        <div ref={cardRef} className="bg-white/5 border border-white/10 dark:bg-black/5 dark:border-black/10 rounded-2xl p-8 backdrop-blur-sm hover:-translate-y-2 hover:shadow-xl transition-all duration-300 flex flex-col h-full">
+            <div className="flex items-center justify-between mb-6">
+                <div className="text-3xl text-blue-500 dark:text-blue-600">
+                    <i className={item.iconClass}></i>
+                </div>
+                <div className="text-4xl font-extrabold text-white dark:text-black font-montserrat">
+                    {count}{item.suffix}
+                </div>
+            </div>
+            
+            <h3 className="text-xl font-bold text-white dark:text-black mb-3">
+                {item.title}
+            </h3>
+            
+            <p className="text-accent-dark dark:text-accent-light text-sm leading-relaxed">
+                {item.description}
+            </p>
+        </div>
+    );
+};
+
+const Metrics: React.FC = () => {
+    return (
+        <section id="resultados" className="py-20 px-4 bg-gray-900 dark:bg-white border-t border-white/10 dark:border-black/5">
+            <div className="max-w-6xl mx-auto">
+                <div className="text-center mb-16">
+                    <h2 className="text-4xl md:text-5xl font-extrabold font-montserrat relative text-white dark:text-black inline-block mb-6">
+                        Resultados
+                        <span className="block h-1 w-20 bg-blue-500 mx-auto mt-2 rounded"></span>
+                    </h2>
+                    <p className="max-w-3xl mx-auto text-gray-400 dark:text-gray-600 text-lg">
+                        O impacto da gestão eficiente da informação. Estudos de mercado comprovam que o controle de dados e a automação de processos são os principais motores de crescimento para empresas modernas.
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {RESULTS.map((item, idx) => (
+                        <MetricCard key={idx} item={item} />
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+};
+
+export default Metrics;
