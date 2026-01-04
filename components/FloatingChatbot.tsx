@@ -535,6 +535,14 @@ const FloatingChatbot: React.FC = () => {
                 )}
             </div>
 
+            {/* Speech Bubble Tooltip - Only show when closed */}
+            {!isOpen && (
+                <div className="absolute bottom-4 right-20 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-lg border border-gray-100 dark:border-white/10 whitespace-nowrap animate-bounce flex items-center">
+                    Fale com a IA
+                    <div className="absolute top-1/2 -right-1 w-2 h-2 bg-white dark:bg-gray-800 border-t border-r border-gray-100 dark:border-white/10 transform -translate-y-1/2 rotate-45"></div>
+                </div>
+            )}
+
             {/* Floating Button */}
             <button 
                 onClick={() => setIsOpen(!isOpen)}
