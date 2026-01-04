@@ -195,7 +195,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage = 'home', theme
                 </div>
 
                 {/* Mobile Menu Overlay */}
-                <div className={`fixed top-0 right-0 w-[85%] h-screen bg-white dark:bg-gray-900 flex flex-col justify-center items-center gap-6 transition-transform duration-500 ease-in-out border-l border-gray-200 dark:border-white/10 shadow-[-10px_0_30px_rgba(0,0,0,0.1)] dark:shadow-[-10px_0_30px_rgba(0,0,0,0.5)] ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} lg:hidden z-[60]`}>
+                <div className={`fixed top-0 right-0 w-[85%] h-screen bg-white dark:bg-gray-900 flex flex-col justify-start pt-24 items-center gap-6 transition-transform duration-500 ease-in-out border-l border-gray-200 dark:border-white/10 shadow-[-10px_0_30px_rgba(0,0,0,0.1)] dark:shadow-[-10px_0_30px_rgba(0,0,0,0.5)] ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} lg:hidden z-[60]`}>
                     
                     {/* Botão de Fechar (X) */}
                     <button 
