@@ -1,3 +1,4 @@
+
 export interface Project {
     title: string;
     description: string;
@@ -64,4 +65,31 @@ export interface BlogPost {
     content: string;
     author: string;
     authorRole: string;
+}
+
+// Novos tipos para o Laboratório
+export interface LabImage {
+    id: number;
+    title: string;
+    url: string;
+    tool: string; // ex: Midjourney, DALL-E
+    prompt?: string;
+}
+
+export interface LabVideo {
+    id: number;
+    title: string;
+    description: string;
+    thumbnailUrl: string;
+    videoUrl: string;
+    duration: string;
+}
+
+export interface LabStudy {
+    id: number;
+    title: string;
+    description: string;
+    status: 'Em Andamento' | 'Concluído' | 'Conceito';
+    date: string;
+    tags: string[];
 }

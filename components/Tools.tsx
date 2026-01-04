@@ -1,11 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { TOOLS } from '../constants';
 
 const Tools: React.FC = () => {
-    // Duplicamos a lista 4 vezes para garantir um loop perfeito sem buracos visuais
-    const allTools = [...TOOLS, ...TOOLS, ...TOOLS, ...TOOLS];
-    const [isPaused, setIsPaused] = useState(false);
-
     return (
         <section id="ferramentas" className="py-20 px-0 bg-white dark:bg-gray-900 transition-colors duration-500 border-y border-gray-200 dark:border-white/5 overflow-hidden">
             <div className="max-w-6xl mx-auto px-4 mb-12">
@@ -15,28 +11,17 @@ const Tools: React.FC = () => {
             </div>
 
             {/* Carousel Container */}
-            <div 
-                className="relative w-full overflow-hidden group py-4"
-                onMouseEnter={() => setIsPaused(true)}
-                onMouseLeave={() => setIsPaused(false)}
-            >
+            <div className="relative w-full group py-4">
                 {/* Gradient Fades nas laterais para suavizar a entrada/saída */}
-                <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 z-20 bg-gradient-to-r from-white dark:from-gray-900 to-transparent pointer-events-none transition-colors duration-500"></div>
-                <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 z-20 bg-gradient-to-l from-white dark:from-gray-900 to-transparent pointer-events-none transition-colors duration-500"></div>
+                <div className="absolute left-0 top-0 bottom-0 w-8 md:w-16 z-20 bg-gradient-to-r from-white dark:from-gray-900 to-transparent pointer-events-none transition-colors duration-500"></div>
+                <div className="absolute right-0 top-0 bottom-0 w-8 md:w-16 z-20 bg-gradient-to-l from-white dark:from-gray-900 to-transparent pointer-events-none transition-colors duration-500"></div>
 
-                {/* Track de Rolagem */}
-                <div 
-                    className="flex gap-8 w-max px-8"
-                    style={{
-                        animation: `scrollLeftTools 50s linear infinite`,
-                        animationPlayState: isPaused ? 'paused' : 'running',
-                        transform: 'translate3d(0, 0, 0)', // Force GPU acceleration
-                    }}
-                >
-                    {allTools.map((tool, idx) => (
+                {/* Track de Rolagem Manual */}
+                <div className="flex gap-8 px-8 overflow-x-auto pb-8 snap-x snap-mandatory scroll-smooth w-full no-scrollbar">
+                    {TOOLS.map((tool, idx) => (
                         <div 
                             key={`${tool.title}-${idx}`} 
-                            className="w-[320px] md:w-[380px] flex-shrink-0 bg-gray-50 border border-gray-200 dark:bg-white/5 dark:border-white/10 rounded-2xl p-8 backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:border-gray-300 dark:hover:border-blue-500/30"
+                            className="w-[320px] md:w-[380px] flex-shrink-0 snap-center bg-gray-50 border border-gray-200 dark:bg-white/5 dark:border-white/10 rounded-2xl p-8 backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:border-gray-300 dark:hover:border-blue-500/30"
                         >
                             <div className="w-16 h-16 rounded-full border-2 border-gray-300 dark:border-white/20 flex items-center justify-center text-2xl text-gray-900 dark:text-white mb-6">
                                 <i className={tool.iconClass}></i>
@@ -61,15 +46,10 @@ const Tools: React.FC = () => {
                             </div>
                         </div>
                     ))}
+                    {/* Espaçador final para garantir que o último item não fique colado na borda */}
+                    <div className="w-4 flex-shrink-0"></div>
                 </div>
             </div>
-
-            <style>{`
-                @keyframes scrollLeftTools {
-                    0% { transform: translateX(0); }
-                    100% { transform: translateX(-25%); } /* Move 25% (um conjunto completo de ferramentas) para criar o loop */
-                }
-            `}</style>
         </section>
     );
 };

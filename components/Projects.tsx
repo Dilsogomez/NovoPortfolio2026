@@ -1,14 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { PROJECTS } from '../constants';
 
 const Projects: React.FC = () => {
-    // Quadruple the projects list to ensure seamless infinite scrolling on all screen sizes
-    // Logic: [Set 1] [Set 2] [Set 3] [Set 4]
-    // Animation moves from 0 to -25% (width of one set).
-    // When it reaches -25%, it visually looks identical to 0% (start of Set 2 is same as start of Set 1).
-    const allProjects = [...PROJECTS, ...PROJECTS, ...PROJECTS, ...PROJECTS];
-    const [isPaused, setIsPaused] = useState(false);
-
     return (
         <section id="projetos" className="py-32 px-0 relative overflow-hidden bg-gray-100 dark:bg-black transition-colors duration-500">
              {/* Tech Background Grid/Elements */}
@@ -19,7 +12,7 @@ const Projects: React.FC = () => {
             </div>
 
             <div className="max-w-7xl mx-auto px-6 mb-16 relative z-10 text-center">
-                <span className="inline-block py-1 px-3 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-600 dark:text-blue-400 text-sm font-semibold tracking-wider mb-4 animate-pulse">
+                <span className="inline-block py-1 px-3 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-600 dark:text-blue-400 text-sm font-semibold tracking-wider mb-4">
                     PORTFÓLIO
                 </span>
                 <h2 className="text-4xl md:text-6xl font-extrabold font-montserrat text-gray-900 dark:text-white mb-6 tracking-tight">
@@ -30,29 +23,18 @@ const Projects: React.FC = () => {
                 </p>
             </div>
 
-            {/* Infinite Scroll Container */}
-            <div 
-                className="relative w-full overflow-hidden group py-10"
-                onMouseEnter={() => setIsPaused(true)}
-                onMouseLeave={() => setIsPaused(false)}
-            >
-                {/* Side Fade Effects - Creates the "Frame" look */}
-                <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 z-20 bg-gradient-to-r from-gray-100 dark:from-black to-transparent pointer-events-none"></div>
-                <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 z-20 bg-gradient-to-l from-gray-100 dark:from-black to-transparent pointer-events-none"></div>
+            {/* Manual Scroll Container */}
+            <div className="relative w-full group py-10">
+                {/* Side Fade Effects */}
+                <div className="absolute left-0 top-0 bottom-0 w-8 md:w-16 z-20 bg-gradient-to-r from-gray-100 dark:from-black to-transparent pointer-events-none"></div>
+                <div className="absolute right-0 top-0 bottom-0 w-8 md:w-16 z-20 bg-gradient-to-l from-gray-100 dark:from-black to-transparent pointer-events-none"></div>
 
                 {/* The Scrolling Track */}
-                <div 
-                    className="flex gap-6 md:gap-10 w-max px-8"
-                    style={{
-                        animation: `scrollLeft 60s linear infinite`,
-                        animationPlayState: isPaused ? 'paused' : 'running',
-                        transform: 'translate3d(0, 0, 0)', // Force GPU acceleration
-                    }}
-                >
-                    {allProjects.map((project, idx) => (
+                <div className="flex gap-6 md:gap-10 px-8 overflow-x-auto pb-12 snap-x snap-mandatory scroll-smooth w-full">
+                    {PROJECTS.map((project, idx) => (
                         <div 
                             key={`${project.title}-${idx}`}
-                            className="relative w-[280px] md:w-[400px] h-[400px] md:h-[500px] flex-shrink-0 group/card perspective-1000"
+                            className="relative w-[280px] md:w-[400px] h-[400px] md:h-[500px] flex-shrink-0 snap-center group/card perspective-1000"
                         >
                             {/* Card Container with Glassmorphism and Hover Effects */}
                             <div className="w-full h-full bg-white dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-3xl overflow-hidden relative transition-all duration-500 ease-out transform group-hover/card:scale-[1.03] group-hover/card:-translate-y-2 hover:shadow-2xl dark:hover:shadow-[0_0_40px_rgba(59,130,246,0.2)]">
@@ -107,15 +89,10 @@ const Projects: React.FC = () => {
                             </div>
                         </div>
                     ))}
+                    {/* Espaçador final */}
+                    <div className="w-4 flex-shrink-0"></div>
                 </div>
             </div>
-
-            <style>{`
-                @keyframes scrollLeft {
-                    0% { transform: translateX(0); }
-                    100% { transform: translateX(-25%); }
-                }
-            `}</style>
         </section>
     );
 };

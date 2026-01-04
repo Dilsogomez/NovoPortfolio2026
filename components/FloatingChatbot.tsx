@@ -48,7 +48,7 @@ const FloatingChatbot: React.FC = () => {
     
     // Chat State
     const [messages, setMessages] = useState<Message[]>([
-        { id: 1, text: "Olá! Sou a IA do Vandilson. Posso responder sobre projetos, cursos ou conversar por voz. Como posso ajudar?", isUser: false }
+        { id: 1, text: "Olá! Sou a VG Brain, sua assistente de navegação. Posso explicar qualquer parte do site, detalhar os projetos ou guiar você pelos serviços. O que gostaria de saber?", isUser: false }
     ]);
     const [input, setInput] = useState("");
     const [isTyping, setIsTyping] = useState(false);
@@ -84,19 +84,44 @@ const FloatingChatbot: React.FC = () => {
     }, []);
 
     const getSystemContext = () => {
-        const siteData = {
+        const siteContext = {
             owner: "Vandilson Gomes",
-            role: "Especialista em CX, Automação e Dev Web",
-            contact: "WhatsApp: +55 11 99450-2134",
-            projects: PROJECTS.map(p => p.title),
-            services: TOOLS.map(t => t.title),
+            profile: "Especialista em Relacionamento ao Cliente (CX), Automação de Processos e Desenvolvimento Web Fullstack.",
+            tagline: "Transforme ideias em realidade.",
+            
+            site_structure: {
+                "Início (Hero)": "Topo da página. Apresentação visual com background de partículas neurais e frase de impacto.",
+                "Serviços (Ferramentas)": `Seção onde listo minhas competências. Detalhes: ${TOOLS.map(t => `${t.title}: ${t.description}`).join(' | ')}.`,
+                "Projetos": `Portfólio de trabalhos realizados. Inclui: ${PROJECTS.map(p => `${p.title} (${p.description})`).join(' | ')}.`,
+                "Resultados": `Métricas de impacto e performance, como: ${RESULTS.map(r => `${r.title}: ${r.value}${r.suffix}`).join(', ')}.`,
+                "Cursos (Vídeos)": "Área educativa com trilhas de conhecimento sobre Inteligência de Dados, Presença Digital e Gestão.",
+                "Blog": "Artigos sobre tecnologia, IA e mercado.",
+                "Contato": "Rodapé com links para WhatsApp, LinkedIn, Instagram e Email.",
+                "Brain IA": "Uma página dedicada onde demonstro capacidades avançadas de IA (como diferentes personas de vendas)."
+            },
+            
+            navigation_help: "O site principal é uma 'One Page' (rolagem vertical). Ao clicar em 'Ver Projeto' ou menus como 'Cursos', o usuário é levado para páginas dedicadas."
         };
 
         return `
-            Você é VG Brain, assistente do Vandilson Gomes.
-            DADOS DO SITE: ${JSON.stringify(siteData)}.
-            Seja breve, profissional e amigável.
-            No modo de voz, suas respostas devem ser curtas (máximo 2 frases) e diretas para uma conversa fluida.
+            Você é a VG Brain, a inteligência artificial de navegação do portfólio de Vandilson Gomes.
+            
+            DADOS COMPLETOS DO SITE:
+            ${JSON.stringify(siteContext)}
+
+            SUA MISSÃO:
+            1. Atuar como um GUIA. Explique o que existe em cada seção do site.
+            2. Se o usuário perguntar "O que é este site?", resuma a proposta do Vandilson (CX + Dev).
+            3. Se perguntarem sobre "Projetos", liste os projetos disponíveis (Bolha, SpaceArte, etc.) e explique brevemente cada um.
+            4. Se perguntarem sobre "Serviços", explique as ferramentas como Análise de Dados e Automação.
+            5. Ajude a localizar informações. Ex: "Para ver os cursos, navegue até a seção de Vídeos ou clique no menu Cursos".
+
+            PERSONALIDADE:
+            Profissional, acolhedora e altamente conhecedora do conteúdo da página.
+            
+            IMPORTANTE:
+            No modo de voz, dê respostas curtas e diretas para manter a conversa fluida.
+            No modo texto, você pode ser mais detalhada.
         `;
     };
 
@@ -359,14 +384,14 @@ const FloatingChatbot: React.FC = () => {
                             {isVoiceMode ? (
                                 <i className="fas fa-microphone-lines text-white text-xs z-10 animate-pulse"></i>
                             ) : (
-                                <i className="fas fa-sparkles text-white text-xs z-10"></i>
+                                <i className="fas fa-map-marked-alt text-white text-xs z-10"></i>
                             )}
                         </div>
                         <div>
                             <h3 className="text-white font-bold text-sm">VG Brain</h3>
                             <p className="text-blue-200 text-xs flex items-center gap-1">
                                 <span className={`w-1.5 h-1.5 rounded-full ${connectionStatus === 'disconnected' ? 'bg-green-400' : 'bg-red-500'} animate-pulse`}></span> 
-                                {isVoiceMode ? 'Modo Voz' : 'Online'}
+                                {isVoiceMode ? 'Modo Voz' : 'Navegação'}
                             </p>
                         </div>
                     </div>
@@ -432,8 +457,8 @@ const FloatingChatbot: React.FC = () => {
                                      isConnecting ? 'Conectando...' : 'Pronto'}
                                 </h3>
                                 <p className="text-gray-400 text-sm">
-                                    {connectionStatus === 'speaking' ? 'Escute a resposta' : 
-                                     connectionStatus === 'listening' ? 'Pode falar agora' : 
+                                    {connectionStatus === 'speaking' ? 'Escute a explicação' : 
+                                     connectionStatus === 'listening' ? 'Pergunte sobre o site' : 
                                      'Aguardando conexão...'}
                                 </p>
                             </div>
@@ -491,7 +516,7 @@ const FloatingChatbot: React.FC = () => {
                                 type="text" 
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
-                                placeholder="Pergunte qualquer coisa..."
+                                placeholder="Onde encontro os cursos?"
                                 className="flex-1 bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500/50 transition-colors placeholder-gray-500"
                             />
                             <button 

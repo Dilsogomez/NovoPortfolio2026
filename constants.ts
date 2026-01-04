@@ -1,4 +1,4 @@
-import { Project, Tool, Metric, NavItem, SocialLink, ResultItem, Course, BlogPost } from './types';
+import { Project, Tool, Metric, NavItem, SocialLink, ResultItem, Course, BlogPost, LabImage, LabStudy, LabVideo } from './types';
 
 export const NAV_ITEMS: NavItem[] = [
     { label: 'Ferramentas', href: '#ferramentas' },
@@ -11,7 +11,7 @@ export const NAV_ITEMS: NavItem[] = [
 
 export const SOCIAL_LINKS: SocialLink[] = [
     { href: 'https://www.linkedin.com/in/vandilson-gomes-492975219/', iconClass: 'fab fa-linkedin-in', label: 'LinkedIn' },
-    { href: 'https://www.instagram.com/dilsogomez/', iconClass: 'fab fa-instagram', label: 'Instagram' },
+    { href: 'https://github.com/Dilsogomez', iconClass: 'fab fa-github', label: 'GitHub' },
     { href: 'https://api.whatsapp.com/send/?phone=5511994502134', iconClass: 'fab fa-whatsapp', label: 'WhatsApp' },
     { href: 'https://open.spotify.com/playlist/6fTwu0W7zpxSLmWg5sgFdU?si=_5ROjvA7RAy-P2afzYovtA', iconClass: 'fab fa-spotify', label: 'Spotify' },
 ];
@@ -63,7 +63,7 @@ export const TOOLS: Tool[] = [
         description: "Plataformas completas para gestão de lojas virtuais e marketplaces.",
         iconClass: "fas fa-shopping-cart",
         features: ["Gestão de inventário", "Processamento de pagamentos", "Logística integrada", "CRM para clientes"],
-        badges: ["Shopify", "WooCommerce", "Nuvemshop"]
+        badges: ["Sites", "Landpages", "Checkout"]
     },
     {
         title: "Marca Solutions",
@@ -165,8 +165,8 @@ export const POSTS: BlogPost[] = [
         date: "15 Out 2023",
         readTime: "5 min",
         imageUrl: "https://images.unsplash.com/photo-1531746790731-6c087fecd65a?q=80&w=2000&auto=format&fit=crop",
-        author: "Vandilson Gomes",
-        authorRole: "Especialista em CX",
+        author: "VG Studio",
+        authorRole: "Gemini API & Python",
         content: `
             <p>O atendimento ao cliente está passando por uma transformação sem precedentes. Não estamos mais falando apenas de respostas automáticas baseadas em palavras-chave simples, mas de uma verdadeira revolução cognitiva impulsionada pela Inteligência Artificial Generativa.</p>
             
@@ -197,8 +197,8 @@ export const POSTS: BlogPost[] = [
         date: "22 Set 2023",
         readTime: "7 min",
         imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2000&auto=format&fit=crop",
-        author: "Equipe VG",
-        authorRole: "Data Science",
+        author: "VG Studio",
+        authorRole: "Power BI & SQL",
         content: `
             <p>Em um mundo digital, cada clique, cada visualização e cada transação gera um rastro digital. Ignorar esses dados é como navegar um navio no meio de uma tempestade sem bússola.</p>
             
@@ -225,8 +225,8 @@ export const POSTS: BlogPost[] = [
         date: "10 Ago 2023",
         readTime: "10 min",
         imageUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2000&auto=format&fit=crop",
-        author: "Vandilson Gomes",
-        authorRole: "Tech Lead",
+        author: "VG Studio",
+        authorRole: "N8N & Webhooks",
         content: `
             <p>Você já parou para contar quantas horas por semana sua equipe gasta copiando dados de uma planilha para um CRM? Ou enviando e-mails de confirmação manuais? A "fadiga de tarefas repetitivas" é o maior inimigo da criatividade.</p>
             
@@ -257,8 +257,8 @@ export const POSTS: BlogPost[] = [
         date: "05 Jul 2023",
         readTime: "6 min",
         imageUrl: "https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?q=80&w=2000&auto=format&fit=crop",
-        author: "Equipe VG",
-        authorRole: "E-commerce Specialist",
+        author: "VG Studio",
+        authorRole: "React & Shopify API",
         content: `
             <p>O e-commerce não é mais apenas sobre ter um site bonito. É sobre logística, experiência e, principalmente, personalização extrema. A era da "loja para todos" acabou; entramos na era da "loja para cada um".</p>
             
@@ -277,3 +277,82 @@ export const POSTS: BlogPost[] = [
 ];
 
 export const METRICS: Metric[] = [];
+
+// --- CONSTANTES DO LABORATÓRIO (NOVAS) ---
+
+export const LAB_IMAGES: LabImage[] = [
+    {
+        id: 1,
+        title: "Neural Architecture",
+        url: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=1000&auto=format&fit=crop",
+        tool: "Midjourney v6",
+        prompt: "Futuristic data center architecture, neon lights, isometric view"
+    },
+    {
+        id: 2,
+        title: "Cyberpunk City",
+        url: "https://images.unsplash.com/photo-1605806616949-1e87b487bc2a?q=80&w=1000&auto=format&fit=crop",
+        tool: "DALL-E 3",
+        prompt: "Cyberpunk city street at night, rain, neon signs, highly detailed"
+    },
+    {
+        id: 3,
+        title: "Abstract Flow",
+        url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop",
+        tool: "Stable Diffusion",
+        prompt: "Abstract liquid metal flow, gold and black, 8k resolution"
+    },
+    {
+        id: 4,
+        title: "AI Brain Concept",
+        url: "https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=1000&auto=format&fit=crop",
+        tool: "Midjourney v5",
+        prompt: "Artificial intelligence brain concept, glowing nodes, network connections"
+    }
+];
+
+export const LAB_STUDIES: LabStudy[] = [
+    {
+        id: 1,
+        title: "Estudando APIs de Integração",
+        description: "Mergulho profundo em protocolos de comunicação (REST, GraphQL, Webhooks) para criar ecossistemas digitais interconectados e robustos.",
+        status: "Em Andamento",
+        date: "2024",
+        tags: ["API", "Backend", "Integração"]
+    },
+    {
+        id: 2,
+        title: "Gerando Vídeos e Cenários com IA",
+        description: "Exploração de modelos generativos de vídeo para criar narrativas visuais complexas e ambientes virtuais realistas sem necessidade de filmagem tradicional.",
+        status: "Em Andamento",
+        date: "2024",
+        tags: ["Video AI", "Sora/Runway", "Criatividade"]
+    },
+    {
+        id: 3,
+        title: "Otimizando Processos com Ferramentas de IA",
+        description: "Aplicação prática de agentes de IA para analisar gargalos operacionais e automatizar fluxos de trabalho, aumentando a produtividade empresarial.",
+        status: "Concluído",
+        date: "2024",
+        tags: ["Automação", "Eficiência", "AI Tools"]
+    }
+];
+
+export const LAB_VIDEOS: LabVideo[] = [
+    {
+        id: 1,
+        title: "Agente de Vendas AI",
+        description: "Demonstração em tempo real de um agente capaz de negociar preços e fechar vendas via WhatsApp.",
+        thumbnailUrl: "https://images.unsplash.com/photo-1596524430615-b46475ddff6e?q=80&w=1000&auto=format&fit=crop",
+        videoUrl: "", // Placeholder
+        duration: "02:45"
+    },
+    {
+        id: 2,
+        title: "Workflow N8N Complexo",
+        description: "Timelapse da construção de um fluxo de automação que integra 5 APIs diferentes.",
+        thumbnailUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1000&auto=format&fit=crop",
+        videoUrl: "", // Placeholder
+        duration: "05:10"
+    }
+];
