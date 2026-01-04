@@ -38,3 +38,30 @@ export interface SocialLink {
     iconClass: string;
     label: string;
 }
+
+export interface Video {
+    title: string;
+    url: string;
+}
+
+export interface Course {
+    title: string;
+    institution: string;
+    description: string;
+    tags: string[];
+    videos: Video[];
+    completed: boolean;
+}
+
+export interface BlogPost {
+    id: number;
+    title: string;
+    excerpt: string;
+    category: string;
+    date: string;
+    readTime: string;
+    imageUrl: string;
+    content: string;
+    author: string;
+    authorRole: string;
+}

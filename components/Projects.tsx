@@ -10,22 +10,22 @@ const Projects: React.FC = () => {
     const [isPaused, setIsPaused] = useState(false);
 
     return (
-        <section id="projetos" className="py-32 px-0 relative overflow-hidden bg-gray-900 dark:bg-black transition-colors duration-500">
+        <section id="projetos" className="py-32 px-0 relative overflow-hidden bg-gray-100 dark:bg-black transition-colors duration-500">
              {/* Tech Background Grid/Elements */}
-            <div className="absolute inset-0 pointer-events-none opacity-20">
+            <div className="absolute inset-0 pointer-events-none opacity-20 dark:opacity-20 opacity-5">
                 <div className="absolute top-0 left-0 w-full h-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-                <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-gray-900 dark:from-black to-transparent z-10"></div>
-                <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-gray-900 dark:from-black to-transparent z-10"></div>
+                <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-gray-100 dark:from-black to-transparent z-10"></div>
+                <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-gray-100 dark:from-black to-transparent z-10"></div>
             </div>
 
             <div className="max-w-7xl mx-auto px-6 mb-16 relative z-10 text-center">
-                <span className="inline-block py-1 px-3 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-sm font-semibold tracking-wider mb-4 animate-pulse">
+                <span className="inline-block py-1 px-3 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-600 dark:text-blue-400 text-sm font-semibold tracking-wider mb-4 animate-pulse">
                     PORTFÓLIO
                 </span>
-                <h2 className="text-4xl md:text-6xl font-extrabold font-montserrat text-white mb-6 tracking-tight">
-                    Projetos <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">Inovadores</span>
+                <h2 className="text-4xl md:text-6xl font-extrabold font-montserrat text-gray-900 dark:text-white mb-6 tracking-tight">
+                    Projetos <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-600">Inovadores</span>
                 </h2>
-                <p className="text-gray-400 text-lg max-w-2xl mx-auto font-light">
+                <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto font-light">
                     Explore uma seleção de trabalhos desenvolvidos com foco em performance, design e experiência do usuário.
                 </p>
             </div>
@@ -37,8 +37,8 @@ const Projects: React.FC = () => {
                 onMouseLeave={() => setIsPaused(false)}
             >
                 {/* Side Fade Effects - Creates the "Frame" look */}
-                <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 z-20 bg-gradient-to-r from-gray-900 dark:from-black to-transparent pointer-events-none"></div>
-                <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 z-20 bg-gradient-to-l from-gray-900 dark:from-black to-transparent pointer-events-none"></div>
+                <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 z-20 bg-gradient-to-r from-gray-100 dark:from-black to-transparent pointer-events-none"></div>
+                <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 z-20 bg-gradient-to-l from-gray-100 dark:from-black to-transparent pointer-events-none"></div>
 
                 {/* The Scrolling Track */}
                 <div 
@@ -55,7 +55,7 @@ const Projects: React.FC = () => {
                             className="relative w-[280px] md:w-[400px] h-[400px] md:h-[500px] flex-shrink-0 group/card perspective-1000"
                         >
                             {/* Card Container with Glassmorphism and Hover Effects */}
-                            <div className="w-full h-full bg-gray-800/30 dark:bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden relative transition-all duration-500 ease-out transform group-hover/card:scale-[1.03] group-hover/card:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6)] dark:hover:shadow-[0_0_40px_rgba(59,130,246,0.2)]">
+                            <div className="w-full h-full bg-white dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-3xl overflow-hidden relative transition-all duration-500 ease-out transform group-hover/card:scale-[1.03] group-hover/card:-translate-y-2 hover:shadow-2xl dark:hover:shadow-[0_0_40px_rgba(59,130,246,0.2)]">
                                 
                                 {/* Image Section */}
                                 <div className="h-[65%] w-full overflow-hidden relative">
@@ -103,7 +103,7 @@ const Projects: React.FC = () => {
                                 </div>
 
                                 {/* Decorative Border Glow */}
-                                <div className="absolute inset-0 border border-white/5 rounded-3xl group-hover/card:border-blue-500/40 transition-colors duration-300 pointer-events-none"></div>
+                                <div className="absolute inset-0 border border-gray-200 dark:border-white/5 rounded-3xl group-hover/card:border-blue-500/40 transition-colors duration-300 pointer-events-none"></div>
                             </div>
                         </div>
                     ))}

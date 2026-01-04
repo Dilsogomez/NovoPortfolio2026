@@ -40,21 +40,21 @@ const MetricCard: React.FC<{ item: ResultItem }> = ({ item }) => {
     }, [item.value]);
 
     return (
-        <div ref={cardRef} className="bg-white/5 border border-white/10 dark:bg-black/5 dark:border-black/10 rounded-2xl p-8 backdrop-blur-sm hover:-translate-y-2 hover:shadow-xl transition-all duration-300 flex flex-col h-full">
+        <div ref={cardRef} className="bg-white border border-gray-200 dark:bg-gray-800/50 dark:border-white/10 rounded-2xl p-8 backdrop-blur-sm hover:-translate-y-2 hover:shadow-xl transition-all duration-300 flex flex-col h-full shadow-sm dark:shadow-none">
             <div className="flex items-center justify-between mb-6">
-                <div className="text-3xl text-blue-500 dark:text-blue-600">
+                <div className="text-3xl text-blue-600 dark:text-blue-400">
                     <i className={item.iconClass}></i>
                 </div>
-                <div className="text-4xl font-extrabold text-white dark:text-black font-montserrat">
+                <div className="text-4xl font-extrabold text-gray-900 dark:text-white font-montserrat">
                     {count}{item.suffix}
                 </div>
             </div>
             
-            <h3 className="text-xl font-bold text-white dark:text-black mb-3">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
                 {item.title}
             </h3>
             
-            <p className="text-accent-dark dark:text-accent-light text-sm leading-relaxed">
+            <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
                 {item.description}
             </p>
         </div>
@@ -63,14 +63,14 @@ const MetricCard: React.FC<{ item: ResultItem }> = ({ item }) => {
 
 const Metrics: React.FC = () => {
     return (
-        <section id="resultados" className="py-20 px-4 bg-gray-900 dark:bg-white border-t border-white/10 dark:border-black/5">
+        <section id="resultados" className="py-20 px-4 bg-gray-50 dark:bg-black border-t border-gray-200 dark:border-white/5 transition-colors duration-500">
             <div className="max-w-6xl mx-auto">
                 <div className="text-center mb-16">
-                    <h2 className="text-4xl md:text-5xl font-extrabold font-montserrat relative text-white dark:text-black inline-block mb-6">
+                    <h2 className="text-4xl md:text-5xl font-extrabold font-montserrat relative text-gray-900 dark:text-white inline-block mb-6 transition-colors">
                         Resultados
-                        <span className="block h-1 w-20 bg-blue-500 mx-auto mt-2 rounded"></span>
+                        <span className="block h-1 w-20 bg-blue-600 dark:bg-blue-500 mx-auto mt-2 rounded"></span>
                     </h2>
-                    <p className="max-w-3xl mx-auto text-gray-400 dark:text-gray-600 text-lg">
+                    <p className="max-w-3xl mx-auto text-gray-600 dark:text-gray-400 text-lg transition-colors">
                         O impacto da gestão eficiente da informação. Estudos de mercado comprovam que o controle de dados e a automação de processos são os principais motores de crescimento para empresas modernas.
                     </p>
                 </div>

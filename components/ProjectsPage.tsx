@@ -9,8 +9,8 @@ const ProjectsPage: React.FC = () => {
                 <span className="inline-block py-1 px-3 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-sm font-semibold tracking-wider mb-4">
                     LABORATÓRIO
                 </span>
-                <h1 className="text-4xl md:text-6xl font-extrabold font-montserrat mb-6">
-                    Projetos & <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">Ferramentas</span>
+                <h1 className="text-4xl md:text-6xl font-extrabold font-montserrat mb-6 text-white">
+                    Projetos
                 </h1>
                 <p className="text-gray-400 text-lg max-w-2xl mx-auto font-light">
                     Uma coleção detalhada de soluções e ferramentas interativas. 

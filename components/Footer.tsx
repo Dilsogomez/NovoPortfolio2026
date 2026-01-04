@@ -2,9 +2,9 @@ import React from 'react';
 
 const Footer: React.FC = () => {
     return (
-        <footer className="py-10 px-4 bg-gray-850 dark:bg-gray-100 border-t border-white/10 dark:border-black/5 text-center">
+        <footer className="py-10 px-4 bg-gray-100 dark:bg-black border-t border-gray-200 dark:border-white/5 text-center transition-colors duration-500">
             <div className="max-w-6xl mx-auto">
-                <div className="text-3xl font-extrabold text-white dark:text-black mb-6 inline-block font-montserrat">VG</div>
+                <div className="text-3xl font-extrabold text-gray-900 dark:text-white mb-6 inline-block font-montserrat">VG</div>
                 
                 <div className="flex flex-wrap justify-center gap-8 mb-8">
                     {[
@@ -18,14 +18,14 @@ const Footer: React.FC = () => {
                         <a 
                             key={link.label}
                             href={link.href}
-                            className="text-accent-dark dark:text-accent-light hover:text-white dark:hover:text-black transition-colors duration-300 font-medium"
+                            className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 font-medium"
                         >
                             {link.label}
                         </a>
                     ))}
                 </div>
                 
-                <p className="text-accent-dark/60 dark:text-accent-light/80 text-sm">
+                <p className="text-gray-500 dark:text-gray-600 text-sm">
                     © 2024 Vandilson Gomes. Todos os direitos reservados.
                 </p>
             </div>
