@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenAI, LiveServerMessage, Modality } from "@google/genai";
-import { PROJECTS, TOOLS, COURSES, POSTS, SOCIAL_LINKS, RESULTS } from '../constants';
+import { PROJECTS, TOOLS, COURSES, POSTS, RESULTS, LAB_IMAGES, LAB_STUDIES, LAB_VIDEOS } from '../constants';
 
 interface Message {
     id: number;
@@ -8,8 +8,7 @@ interface Message {
     isUser: boolean;
 }
 
-// --- Audio Helper Functions (Based on Live API Guidelines) ---
-
+// --- Audio Helper Functions ---
 function floatTo16BitPCM(input: Float32Array): Int16Array {
     const output = new Int16Array(input.length);
     for (let i = 0; i < input.length; i++) {
@@ -48,7 +47,7 @@ const FloatingChatbot: React.FC = () => {
     
     // Chat State
     const [messages, setMessages] = useState<Message[]>([
-        { id: 1, text: "Olá! Sou a VG Brain, sua assistente de navegação. Posso explicar qualquer parte do site, detalhar os projetos ou guiar você pelos serviços. O que gostaria de saber?", isUser: false }
+        { id: 1, text: "Olá! Sou a VG Brain. Conheço cada detalhe deste portfólio, desde os projetos de código até os planos de inteligência artificial. Como posso te guiar?", isUser: false }
     ]);
     const [input, setInput] = useState("");
     const [isTyping, setIsTyping] = useState(false);
@@ -60,7 +59,7 @@ const FloatingChatbot: React.FC = () => {
     const processorRef = useRef<ScriptProcessorNode | null>(null);
     const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
     const nextStartTimeRef = useRef<number>(0);
-    const sessionRef = useRef<any>(null); // Live Session
+    const sessionRef = useRef<any>(null); 
     const activeSourcesRef = useRef<Set<AudioBufferSourceNode>>(new Set());
     
     // Transcription Accumulator
@@ -84,44 +83,68 @@ const FloatingChatbot: React.FC = () => {
     }, []);
 
     const getSystemContext = () => {
-        const siteContext = {
+        const fullSiteKnowledge = {
             owner: "Vandilson Gomes",
-            profile: "Especialista em Relacionamento ao Cliente (CX), Automação de Processos e Desenvolvimento Web Fullstack.",
-            tagline: "Transforme ideias em realidade.",
-            
-            site_structure: {
-                "Início (Hero)": "Topo da página. Apresentação visual com background de partículas neurais e frase de impacto.",
-                "Serviços (Ferramentas)": `Seção onde listo minhas competências. Detalhes: ${TOOLS.map(t => `${t.title}: ${t.description}`).join(' | ')}.`,
-                "Projetos": `Portfólio de trabalhos realizados. Inclui: ${PROJECTS.map(p => `${p.title} (${p.description})`).join(' | ')}.`,
-                "Resultados": `Métricas de impacto e performance, como: ${RESULTS.map(r => `${r.title}: ${r.value}${r.suffix}`).join(', ')}.`,
-                "Cursos (Vídeos)": "Área educativa com trilhas de conhecimento sobre Inteligência de Dados, Presença Digital e Gestão.",
-                "Blog": "Artigos sobre tecnologia, IA e mercado.",
-                "Contato": "Rodapé com links para WhatsApp, LinkedIn, Instagram e Email.",
-                "Brain IA": "Uma página dedicada onde demonstro capacidades avançadas de IA (como diferentes personas de vendas)."
+            role: "Especialista em Relacionamento ao Cliente (CX) e Desenvolvimento Web Fullstack",
+            bio: "Profissional que combina criatividade, atenção aos detalhes e foco no usuário. Paixão por transformar ideias em realidade através do código.",
+            contact: {
+                email: "vandilsogomez.silva@gmail.com",
+                phone: "+55 11 99450-2134",
+                location: "São Paulo, Brasil"
             },
             
-            navigation_help: "O site principal é uma 'One Page' (rolagem vertical). Ao clicar em 'Ver Projeto' ou menus como 'Cursos', o usuário é levado para páginas dedicadas."
+            // CONTEÚDO DINÂMICO DOS CONSTANTS
+            portfolio_projects: PROJECTS,
+            services_tools: TOOLS,
+            results_metrics: RESULTS,
+            education_courses: COURSES,
+            blog_posts: POSTS,
+            
+            // CONTEÚDO DO LABORATÓRIO
+            lab_content: {
+                description: "Espaço de Criação onde a tecnologia transforma ideias em realidade.",
+                experiments: LAB_STUDIES,
+                videos: LAB_VIDEOS,
+                generated_images: LAB_IMAGES,
+                services_offered: [
+                    "Desenvolvimento Web/App",
+                    "Automação & IA",
+                    "Design & Criativo",
+                    "Consultoria de Dados"
+                ]
+            },
+
+            // CONTEÚDO DA PÁGINA BRAIN IA (PRODUTO)
+            vg_brain_product: {
+                concept: "Uma Mente. Múltiplas Funções. Sistema de IA que se adapta para ser Especialista de Produto, Consultor de Vendas, Embaixador da Marca ou Closer de Negócios.",
+                plans: [
+                    {
+                        name: "NEXUS START",
+                        price: "R$ 499/mês",
+                        features: "Embaixador da Marca, Atendimento 24/7, Agendamento de Reuniões, Integração WhatsApp."
+                    },
+                    {
+                        name: "SYNAPSE PRO",
+                        price: "R$ 990/mês",
+                        features: "Inteligência Total (Vendas, Produto, Closer), Negociação por Voz, Checkout Integrado, Dashboard em Tempo Real."
+                    }
+                ]
+            }
         };
 
         return `
-            Você é a VG Brain, a inteligência artificial de navegação do portfólio de Vandilson Gomes.
+            Você é a VG Brain, a inteligência artificial central do portfólio de Vandilson Gomes.
             
-            DADOS COMPLETOS DO SITE:
-            ${JSON.stringify(siteContext)}
+            BASE DE CONHECIMENTO TOTAL (ESTUDE ISSO PROFUNDAMENTE):
+            ${JSON.stringify(fullSiteKnowledge)}
 
-            SUA MISSÃO:
-            1. Atuar como um GUIA. Explique o que existe em cada seção do site.
-            2. Se o usuário perguntar "O que é este site?", resuma a proposta do Vandilson (CX + Dev).
-            3. Se perguntarem sobre "Projetos", liste os projetos disponíveis (Bolha, SpaceArte, etc.) e explique brevemente cada um.
-            4. Se perguntarem sobre "Serviços", explique as ferramentas como Análise de Dados e Automação.
-            5. Ajude a localizar informações. Ex: "Para ver os cursos, navegue até a seção de Vídeos ou clique no menu Cursos".
-
-            PERSONALIDADE:
-            Profissional, acolhedora e altamente conhecedora do conteúdo da página.
-            
-            IMPORTANTE:
-            No modo de voz, dê respostas curtas e diretas para manter a conversa fluida.
-            No modo texto, você pode ser mais detalhada.
+            SUAS DIRETRIZES:
+            1. Você sabe TUDO sobre o site. Se perguntarem "Quem é Vandilson?", use a bio. Se perguntarem "Quais os projetos?", liste os projetos do portfólio.
+            2. Se perguntarem sobre "Laboratório", explique que é uma área de experimentos com IA, vídeos e estudos, onde também é possível contratar serviços.
+            3. Se perguntarem sobre "Brain IA" ou "VG Brain" (o produto), venda os planos Nexus Start e Synapse Pro detalhadamente.
+            4. Se perguntarem sobre "Artigos" ou "Blog", cite os títulos disponíveis.
+            5. Sua personalidade é profissional, tecnológica e prestativa.
+            6. No modo de voz, seja concisa. No modo texto, use formatação para organizar as listas.
         `;
     };
 
@@ -134,18 +157,15 @@ const FloatingChatbot: React.FC = () => {
         try {
             const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             
-            // Audio Contexts
             const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-            const audioCtx = new AudioContextClass({ sampleRate: 24000 }); // Output rate
-            await audioCtx.resume(); // Ensure it's running
+            const audioCtx = new AudioContextClass({ sampleRate: 24000 }); 
+            await audioCtx.resume(); 
             audioContextRef.current = audioCtx;
             nextStartTimeRef.current = 0;
 
-            // Input Stream (Microphone)
             const stream = await navigator.mediaDevices.getUserMedia({ audio: { sampleRate: 16000 } });
             mediaStreamRef.current = stream;
 
-            // Connect to Live API
             const sessionPromise = ai.live.connect({
                 model: 'gemini-2.5-flash-native-audio-preview-09-2025',
                 config: {
@@ -154,7 +174,6 @@ const FloatingChatbot: React.FC = () => {
                         voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } }
                     },
                     systemInstruction: getSystemContext(),
-                    // Habilitar transcrição para salvar no histórico
                     inputAudioTranscription: {}, 
                     outputAudioTranscription: {}, 
                 },
@@ -164,7 +183,6 @@ const FloatingChatbot: React.FC = () => {
                         setConnectionStatus('connected');
                         setIsConnecting(false);
 
-                        // Setup Input Processing (16kHz)
                         const inputCtx = new AudioContextClass({ sampleRate: 16000 });
                         const source = inputCtx.createMediaStreamSource(stream);
                         const processor = inputCtx.createScriptProcessor(4096, 1, 1);
@@ -176,55 +194,37 @@ const FloatingChatbot: React.FC = () => {
                             
                             sessionPromise.then((session) => {
                                 session.sendRealtimeInput({ 
-                                    media: { 
-                                        mimeType: 'audio/pcm;rate=16000', 
-                                        data: pcmBlob 
-                                    } 
+                                    media: { mimeType: 'audio/pcm;rate=16000', data: pcmBlob } 
                                 });
                             });
                         };
 
                         source.connect(processor);
-                        processor.connect(inputCtx.destination); // Necessário para o script rodar no Chrome
-
-                        // Save refs to clean up later
+                        processor.connect(inputCtx.destination); 
                         sourceRef.current = source as any; 
                         processorRef.current = processor;
                     },
                     onmessage: async (message: LiveServerMessage) => {
-                        // 1. Handle Audio Output
                         const audioData = message.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data;
                         if (audioData) {
                             setConnectionStatus('speaking');
-                            
-                            // Decode Audio
                             const audioBytes = base64ToUint8Array(audioData);
-                            // Simple conversion for raw PCM 24kHz to AudioBuffer
-                            // O Gemini retorna PCM raw 16-bit Little Endian.
-                            
                             const int16 = new Int16Array(audioBytes.buffer);
                             const float32 = new Float32Array(int16.length);
                             for(let i=0; i<int16.length; i++) {
                                 float32[i] = int16[i] / 32768.0;
                             }
-
                             const buffer = audioCtx.createBuffer(1, float32.length, 24000);
                             buffer.getChannelData(0).set(float32);
-
                             const source = audioCtx.createBufferSource();
                             source.buffer = buffer;
                             source.connect(audioCtx.destination);
-                            
-                            // Schedule playback
                             const now = audioCtx.currentTime;
-                            // Se o nextStart ficou para trás (pausa longa), reseta para agora
                             if (nextStartTimeRef.current < now) {
                                 nextStartTimeRef.current = now;
                             }
-                            
                             source.start(nextStartTimeRef.current);
                             nextStartTimeRef.current += buffer.duration;
-
                             source.onended = () => {
                                 activeSourcesRef.current.delete(source);
                                 if (activeSourcesRef.current.size === 0) {
@@ -233,43 +233,25 @@ const FloatingChatbot: React.FC = () => {
                             };
                             activeSourcesRef.current.add(source);
                         }
-
-                        // 2. Handle Interruption
                         if (message.serverContent?.interrupted) {
                             activeSourcesRef.current.forEach(s => s.stop());
                             activeSourcesRef.current.clear();
                             nextStartTimeRef.current = 0;
                             setConnectionStatus('listening');
                         }
-
-                        // 3. Handle Transcriptions (Accumulate & Display)
                         const inputTr = message.serverContent?.inputTranscription?.text;
-                        if (inputTr) {
-                             transcriptAccumulator.current.user += inputTr;
-                        }
-                
+                        if (inputTr) transcriptAccumulator.current.user += inputTr;
                         const outputTr = message.serverContent?.outputTranscription?.text;
-                        if (outputTr) {
-                             transcriptAccumulator.current.model += outputTr;
-                        }
-                
+                        if (outputTr) transcriptAccumulator.current.model += outputTr;
                         if (message.serverContent?.turnComplete) {
                              const userText = transcriptAccumulator.current.user;
                              const modelText = transcriptAccumulator.current.model;
-                             
-                             if (userText.trim()) {
-                                 setMessages(prev => [...prev, { id: Date.now(), text: userText, isUser: true }]);
-                             }
-                             if (modelText.trim()) {
-                                 setMessages(prev => [...prev, { id: Date.now() + 1, text: modelText, isUser: false }]);
-                             }
-                
-                             // Clear accumulator
+                             if (userText.trim()) setMessages(prev => [...prev, { id: Date.now(), text: userText, isUser: true }]);
+                             if (modelText.trim()) setMessages(prev => [...prev, { id: Date.now() + 1, text: modelText, isUser: false }]);
                              transcriptAccumulator.current = { user: "", model: "" };
                         }
                     },
                     onclose: () => {
-                        console.log("VG Brain: Voz Desconectada");
                         setConnectionStatus('disconnected');
                     },
                     onerror: (e) => {
@@ -279,9 +261,7 @@ const FloatingChatbot: React.FC = () => {
                     }
                 }
             });
-
             sessionRef.current = sessionPromise;
-
         } catch (error) {
             console.error("Falha ao iniciar modo voz:", error);
             setIsConnecting(false);
@@ -325,7 +305,7 @@ const FloatingChatbot: React.FC = () => {
         }
     };
 
-    // --- Text Chat Logic (Legacy) ---
+    // --- Text Chat Logic ---
 
     const handleTextSend = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
