@@ -8,6 +8,30 @@ interface Message {
     isUser: boolean;
 }
 
+// --- Componente de Efeito de Digitação (Corrigido) ---
+const Typewriter = ({ text, speed = 20 }: { text: string; speed?: number }) => {
+    const [displayedText, setDisplayedText] = useState('');
+
+    useEffect(() => {
+        setDisplayedText(''); 
+        let i = 0;
+        
+        const timer = setInterval(() => {
+            if (i < text.length) {
+                // Usar slice garante que pegamos a string exata até o índice, evitando duplicações
+                setDisplayedText(text.slice(0, i + 1));
+                i++;
+            } else {
+                clearInterval(timer);
+            }
+        }, speed);
+
+        return () => clearInterval(timer);
+    }, [text, speed]);
+
+    return <span>{displayedText}</span>;
+};
+
 // --- Audio Helper Functions ---
 function floatTo16BitPCM(input: Float32Array): Int16Array {
     const output = new Int16Array(input.length);
@@ -47,7 +71,7 @@ const FloatingChatbot: React.FC = () => {
     
     // Chat State
     const [messages, setMessages] = useState<Message[]>([
-        { id: 1, text: "Olá! Sou a VG Brain. Conheço cada detalhe deste portfólio, desde os projetos de código até os planos de inteligência artificial. Como posso te guiar?", isUser: false }
+        { id: 1, text: "Olá! Sou a Marta. Conheço todo este portfólio. Como posso te ajudar de forma objetiva?", isUser: false }
     ]);
     const [input, setInput] = useState("");
     const [isTyping, setIsTyping] = useState(false);
@@ -85,8 +109,8 @@ const FloatingChatbot: React.FC = () => {
     const getSystemContext = () => {
         const fullSiteKnowledge = {
             owner: "Vandilson Gomes",
-            role: "Especialista em Relacionamento ao Cliente (CX) e Desenvolvimento Web Fullstack",
-            bio: "Profissional que combina criatividade, atenção aos detalhes e foco no usuário. Paixão por transformar ideias em realidade através do código.",
+            role: "Especialista CX e Desenvolvedor Fullstack",
+            bio: "Transforma ideias em realidade através do código. Especialista em Experiência do Cliente.",
             contact: {
                 email: "vandilsogomez.silva@gmail.com",
                 phone: "+55 11 99450-2134",
@@ -102,49 +126,46 @@ const FloatingChatbot: React.FC = () => {
             
             // CONTEÚDO DO LABORATÓRIO
             lab_content: {
-                description: "Espaço de Criação onde a tecnologia transforma ideias em realidade.",
-                experiments: LAB_STUDIES,
-                videos: LAB_VIDEOS,
-                generated_images: LAB_IMAGES,
+                description: "Área de experimentos com IA e serviços criativos.",
                 services_offered: [
-                    "Desenvolvimento Web/App",
+                    "Web/App",
                     "Automação & IA",
-                    "Design & Criativo",
-                    "Consultoria de Dados"
+                    "Design",
+                    "Dados"
                 ]
             },
 
-            // CONTEÚDO DA PÁGINA BRAIN IA (PRODUTO)
-            vg_brain_product: {
-                concept: "Uma Mente. Múltiplas Funções. Sistema de IA que se adapta para ser Especialista de Produto, Consultor de Vendas, Embaixador da Marca ou Closer de Negócios.",
+            // CONTEÚDO DA PÁGINA BRAIN IA (PRODUTO) - Agora MARTA
+            marta_ai_product: {
+                concept: "IA multifuncional: Especialista, Consultora, Embaixadora e Closer.",
                 plans: [
                     {
                         name: "NEXUS START",
                         price: "R$ 499/mês",
-                        features: "Embaixador da Marca, Atendimento 24/7, Agendamento de Reuniões, Integração WhatsApp."
+                        features: "Embaixador da Marca, Atendimento 24/7, Integração WhatsApp."
                     },
                     {
                         name: "SYNAPSE PRO",
                         price: "R$ 990/mês",
-                        features: "Inteligência Total (Vendas, Produto, Closer), Negociação por Voz, Checkout Integrado, Dashboard em Tempo Real."
+                        features: "Vendas, Negociação por Voz, Checkout, Dashboard."
                     }
                 ]
             }
         };
 
         return `
-            Você é a VG Brain, a inteligência artificial central do portfólio de Vandilson Gomes.
+            Você é a Marta, a IA do portfólio de Vandilson Gomes.
             
-            BASE DE CONHECIMENTO TOTAL (ESTUDE ISSO PROFUNDAMENTE):
+            BASE DE DADOS:
             ${JSON.stringify(fullSiteKnowledge)}
 
-            SUAS DIRETRIZES:
-            1. Você sabe TUDO sobre o site. Se perguntarem "Quem é Vandilson?", use a bio. Se perguntarem "Quais os projetos?", liste os projetos do portfólio.
-            2. Se perguntarem sobre "Laboratório", explique que é uma área de experimentos com IA, vídeos e estudos, onde também é possível contratar serviços.
-            3. Se perguntarem sobre "Brain IA" ou "VG Brain" (o produto), venda os planos Nexus Start e Synapse Pro detalhadamente.
-            4. Se perguntarem sobre "Artigos" ou "Blog", cite os títulos disponíveis.
-            5. Sua personalidade é profissional, tecnológica e prestativa.
-            6. No modo de voz, seja concisa. No modo texto, use formatação para organizar as listas.
+            DIRETRIZES DE ESTILO (PRIORIDADE MÁXIMA - SEJA OBJETIVA):
+            1. RESPOSTAS CURTAS: Limite suas respostas a 2 ou 3 frases curtas. Vá direto ao ponto.
+            2. SEM ENROLAÇÃO: Não use saudações longas ou frases de enchimento como "Espero que isso ajude".
+            3. USE TÓPICOS: Se listar mais de 2 itens (projetos, serviços, planos), use bullet points para leitura rápida.
+            4. MODO VENDAS: Ao falar dos planos (Nexus/Synapse), mostre o preço e o benefício principal imediatamente.
+            5. MODO VOZ: Se estiver falando, seja ainda mais breve (máximo 15 palavras por frase).
+            6. PERSONALIDADE: Eficiente, profissional, tecnológica e precisa.
         `;
     };
 
@@ -152,6 +173,18 @@ const FloatingChatbot: React.FC = () => {
 
     const startVoiceSession = async () => {
         if (isConnecting || connectionStatus === 'connected') return;
+
+        // Security Check: Ensure API Key is selected
+        if ((window as any).aistudio && (window as any).aistudio.hasSelectedApiKey) {
+            const hasKey = await (window as any).aistudio.hasSelectedApiKey();
+            if (!hasKey) {
+                try {
+                     await (window as any).aistudio.openSelectKey();
+                     if (!(await (window as any).aistudio.hasSelectedApiKey())) return;
+                } catch (e) { console.error("Key selection failed", e); return; }
+            }
+        }
+
         setIsConnecting(true);
 
         try {
@@ -179,7 +212,7 @@ const FloatingChatbot: React.FC = () => {
                 },
                 callbacks: {
                     onopen: () => {
-                        console.log("VG Brain: Voz Conectada");
+                        console.log("Marta: Voz Conectada");
                         setConnectionStatus('connected');
                         setIsConnecting(false);
 
@@ -255,7 +288,7 @@ const FloatingChatbot: React.FC = () => {
                         setConnectionStatus('disconnected');
                     },
                     onerror: (e) => {
-                        console.error("VG Brain Error:", e);
+                        console.error("Marta Error:", e);
                         setConnectionStatus('disconnected');
                         setIsConnecting(false);
                     }
@@ -310,6 +343,17 @@ const FloatingChatbot: React.FC = () => {
     const handleTextSend = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
         if (!input.trim()) return;
+
+         // Security Check: Ensure API Key is selected
+         if ((window as any).aistudio && (window as any).aistudio.hasSelectedApiKey) {
+            const hasKey = await (window as any).aistudio.hasSelectedApiKey();
+            if (!hasKey) {
+                try {
+                     await (window as any).aistudio.openSelectKey();
+                     if (!(await (window as any).aistudio.hasSelectedApiKey())) return;
+                } catch (e) { console.error("Key selection failed", e); return; }
+            }
+        }
 
         const userText = input;
         const userMsg: Message = { id: Date.now(), text: userText, isUser: true };
@@ -368,7 +412,7 @@ const FloatingChatbot: React.FC = () => {
                             )}
                         </div>
                         <div>
-                            <h3 className="text-white font-bold text-sm">VG Brain</h3>
+                            <h3 className="text-white font-bold text-sm">Marta</h3>
                             <p className="text-blue-200 text-xs flex items-center gap-1">
                                 <span className={`w-1.5 h-1.5 rounded-full ${connectionStatus === 'disconnected' ? 'bg-green-400' : 'bg-red-500'} animate-pulse`}></span> 
                                 {isVoiceMode ? 'Modo Voz' : 'Navegação'}
@@ -432,9 +476,9 @@ const FloatingChatbot: React.FC = () => {
 
                             <div className="text-center space-y-2">
                                 <h3 className="text-xl font-bold text-white tracking-wider font-montserrat">
-                                    {connectionStatus === 'speaking' ? 'VG Brain falando...' : 
+                                    {connectionStatus === 'speaking' ? 'Marta falando...' : 
                                      connectionStatus === 'listening' ? 'Ouvindo você...' : 
-                                     isConnecting ? 'Conectando...' : 'Pronto'}
+                                     isConnecting ? 'Conectando...' : 'Diga, Olá Marta'}
                                 </h3>
                                 <p className="text-gray-400 text-sm">
                                     {connectionStatus === 'speaking' ? 'Escute a explicação' : 
@@ -474,7 +518,11 @@ const FloatingChatbot: React.FC = () => {
                                             ? 'bg-blue-600 text-white rounded-br-none shadow-blue-900/20' 
                                             : 'bg-gray-800 text-gray-100 rounded-bl-none border border-white/10'
                                     }`}>
-                                        {msg.text}
+                                        {msg.isUser ? (
+                                            msg.text
+                                        ) : (
+                                            <Typewriter text={msg.text} />
+                                        )}
                                     </div>
                                 </div>
                             ))}
@@ -496,7 +544,7 @@ const FloatingChatbot: React.FC = () => {
                                 type="text" 
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
-                                placeholder="Onde encontro os cursos?"
+                                placeholder="Pergunte sobre projetos ou planos..."
                                 className="flex-1 bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500/50 transition-colors placeholder-gray-500"
                             />
                             <button 
@@ -518,7 +566,7 @@ const FloatingChatbot: React.FC = () => {
             {/* Speech Bubble Tooltip - Only show when closed */}
             {!isOpen && (
                 <div className="absolute bottom-4 right-20 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-lg border border-gray-100 dark:border-white/10 whitespace-nowrap animate-bounce flex items-center">
-                    Fale com a IA
+                    Fale com a Marta
                     <div className="absolute top-1/2 -right-1 w-2 h-2 bg-white dark:bg-gray-800 border-t border-r border-gray-100 dark:border-white/10 transform -translate-y-1/2 rotate-45"></div>
                 </div>
             )}

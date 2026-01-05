@@ -16,7 +16,7 @@ const Hero: React.FC = () => {
                 </h1>
                 
                 <h2 className="text-xl md:text-3xl text-gray-700 dark:text-gray-300 mb-8 font-light tracking-wide transition-colors">
-                    Relacionamento ao cliente <span className="text-blue-600 dark:text-blue-500 mx-2">|</span> Desenvolvimento Web
+                    Customer Experience <span className="text-blue-600 dark:text-blue-500 mx-2">|</span> Web Development
                 </h2>
                 
                 <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed transition-colors">
@@ -40,7 +40,7 @@ const Hero: React.FC = () => {
             </div>
 
             <a href="#ferramentas" className="absolute bottom-10 flex flex-col items-center text-gray-400 dark:text-white/50 hover:text-gray-900 dark:hover:text-white transition-colors duration-300 z-10 cursor-pointer pointer-events-auto">
-                <span className="text-[10px] uppercase tracking-[0.2em] mb-2 font-mono">Scroll Down</span>
+                <span className="text-[10px] uppercase tracking-[0.2em] mb-2 font-mono">Role para baixo</span>
                 <i className="fas fa-chevron-down text-xl animate-bounce"></i>
             </a>
         </section>

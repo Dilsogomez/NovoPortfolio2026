@@ -9,7 +9,7 @@ const Footer: React.FC = () => {
                 <div className="flex flex-wrap justify-center gap-8 mb-8">
                     {[
                         { label: 'Início', href: '#inicio' },
-                        { label: 'Ferramentas', href: '#ferramentas' },
+                        { label: 'Serviços', href: '#ferramentas' },
                         { label: 'Projetos', href: '#projetos' },
                         { label: 'Vídeos', href: '#cursos' },
                         { label: 'Blog', href: '#blog' },

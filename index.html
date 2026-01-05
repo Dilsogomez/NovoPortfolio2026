@@ -51,6 +51,15 @@
             background: #666;
         }
         
+        /* Utility to hide scrollbar but allow scrolling */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
         html {
             scroll-padding-top: 100px;
         }

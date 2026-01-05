@@ -51,8 +51,8 @@ const Projects: React.FC = () => {
                                     {/* Tech Badge */}
                                     <div className="absolute top-4 right-4 z-20 bg-black/60 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full shadow-lg">
                                         <div className="flex items-center gap-2">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_10px_#22c55e]"></div>
-                                            <span className="text-[10px] text-white font-bold tracking-widest uppercase">Online</span>
+                                            <div className={`w-1.5 h-1.5 rounded-full ${project.status === 'Offline' ? 'bg-red-500' : 'bg-green-500 animate-pulse shadow-[0_0_10px_#22c55e]'}`}></div>
+                                            <span className="text-[10px] text-white font-bold tracking-widest uppercase">{project.status || 'Online'}</span>
                                         </div>
                                     </div>
                                 </div>

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import CanvasBackground from './components/CanvasBackground';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import Tools from './components/Tools';
@@ -12,10 +11,11 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import FloatingChatbot from './components/FloatingChatbot';
 import BrainAIPage from './components/BrainAIPage';
+import LabPage from './components/LabPage';
 
 function App() {
     const [showBackToTop, setShowBackToTop] = useState(false);
-    const [currentPage, setCurrentPage] = useState<'home' | 'projects' | 'courses' | 'blog' | 'brain-ai'>('home');
+    const [currentPage, setCurrentPage] = useState<'home' | 'projects' | 'courses' | 'blog' | 'brain-ai' | 'lab'>('home');
     
     // Theme State Management
     const [theme, setTheme] = useState<'dark' | 'light'>(() => {
@@ -54,28 +54,29 @@ function App() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    const handleNavigation = (page: 'home' | 'projects' | 'courses' | 'blog' | 'brain-ai') => {
+    const handleNavigation = (page: 'home' | 'projects' | 'courses' | 'blog' | 'brain-ai' | 'lab') => {
         setCurrentPage(page);
         window.scrollTo({ top: 0, behavior: 'instant' });
     };
 
     return (
         <div className="relative min-h-screen font-sans selection:bg-blue-500 selection:text-white bg-gray-50 dark:bg-black text-gray-900 dark:text-white transition-colors duration-500">
-            <CanvasBackground />
             
-            <Header 
-                onNavigate={handleNavigation} 
-                currentPage={currentPage} 
-                theme={theme}
-                toggleTheme={toggleTheme}
-            />
+            {currentPage !== 'lab' && (
+                <Header 
+                    onNavigate={handleNavigation} 
+                    currentPage={currentPage} 
+                    theme={theme}
+                    toggleTheme={toggleTheme}
+                />
+            )}
             
             <main className="relative z-10">
                 {currentPage === 'home' && (
                     <>
                         <Hero />
-                        <Tools />
                         <Projects />
+                        <Tools />
                         <Metrics />
                         <Contact />
                     </>
@@ -83,6 +84,14 @@ function App() {
                 
                 {currentPage === 'projects' && (
                     <ProjectsPage />
+                )}
+
+                {currentPage === 'lab' && (
+                    <LabPage 
+                        onBack={() => handleNavigation('home')} 
+                        theme={theme}
+                        toggleTheme={toggleTheme}
+                    />
                 )}
 
                 {currentPage === 'courses' && (
@@ -98,10 +107,10 @@ function App() {
                 )}
             </main>
 
-            <Footer />
+            {currentPage !== 'lab' && <Footer />}
 
-            {/* Oculta o chat flutuante se estiver na página dedicada da IA para evitar duplicação */}
-            {currentPage !== 'brain-ai' && <FloatingChatbot />}
+            {/* Oculta o chat flutuante se estiver na página dedicada da IA ou no Laboratório para evitar duplicação */}
+            {currentPage !== 'brain-ai' && currentPage !== 'lab' && <FloatingChatbot />}
 
             {/* Back To Top Button */}
             <button

@@ -1,9 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { NAV_ITEMS } from '../constants';
 
 interface HeaderProps {
-    onNavigate?: (page: 'home' | 'projects' | 'courses' | 'blog' | 'brain-ai') => void;
-    currentPage?: 'home' | 'projects' | 'courses' | 'blog' | 'brain-ai';
+    onNavigate?: (page: 'home' | 'projects' | 'courses' | 'blog' | 'brain-ai' | 'lab') => void;
+    currentPage?: 'home' | 'projects' | 'courses' | 'blog' | 'brain-ai' | 'lab';
     theme?: 'dark' | 'light';
     toggleTheme?: () => void;
 }
@@ -84,7 +85,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage = 'home', theme
     };
 
     const handleLabClick = () => {
-        if (onNavigate) onNavigate('projects');
+        if (onNavigate) onNavigate('lab');
     };
 
     const isActive = (href: string) => {
@@ -113,7 +114,6 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage = 'home', theme
                 </div>
 
                 {/* Center - Desktop Navigation */}
-                {/* Mudado de absolute para flex normal, hidden em telas menores que lg para evitar quebra */}
                 <div className="hidden lg:flex items-center justify-center flex-1 px-4">
                     <ul className="flex gap-6 xl:gap-8 items-center">
                         {NAV_ITEMS.map((item) => (
@@ -155,21 +155,21 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage = 'home', theme
                         </button>
                     )}
 
-                    {/* Laboratório Button - Visível em mobile (ícone), texto em xl */}
+                    {/* Laboratório Button */}
                     <button
                         onClick={handleLabClick}
                         className={`flex items-center gap-2 px-2 md:px-3 py-1.5 rounded-full border transition-all duration-300 group ${
-                            currentPage === 'projects' 
+                            currentPage === 'lab' 
                                 ? 'bg-blue-600/10 border-blue-500 text-blue-600 dark:text-blue-400' 
                                 : 'bg-gray-100 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:bg-white hover:shadow-md dark:hover:bg-white/10 dark:hover:text-white'
                         }`}
                         title="Laboratório"
                     >
-                        <i className={`fas fa-flask text-sm ${currentPage === 'projects' ? 'animate-pulse' : 'group-hover:text-blue-500 dark:group-hover:text-blue-400'}`}></i>
+                        <i className={`fas fa-flask text-sm ${currentPage === 'lab' ? 'animate-pulse' : 'group-hover:text-blue-500 dark:group-hover:text-blue-400'}`}></i>
                         <span className="hidden xl:inline text-sm font-medium tracking-wide">Laboratório</span>
                     </button>
 
-                    {/* Brain IA Button - Visível em mobile (ícone), texto em xl */}
+                    {/* Studio AI Button (Renomeado) */}
                     <button
                         onClick={handleBrainAIClick}
                         className={`flex items-center gap-2 px-2 md:px-3 py-1.5 rounded-full border transition-all duration-300 group ${
@@ -177,13 +177,15 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage = 'home', theme
                                 ? 'bg-blue-600/10 border-blue-500 text-blue-600 dark:text-blue-400' 
                                 : 'bg-gray-100 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:bg-white hover:shadow-md dark:hover:bg-white/10 dark:hover:text-white'
                         }`}
-                        title="Brain IA"
+                        title="Studio AI"
                     >
-                        <i className={`fas fa-brain text-sm ${currentPage === 'brain-ai' ? 'animate-pulse' : 'group-hover:text-blue-500 dark:group-hover:text-blue-400'}`}></i>
-                        <span className="hidden xl:inline text-sm font-medium tracking-wide">Brain IA</span>
+                        <i className={`fas fa-wand-magic-sparkles text-sm ${currentPage === 'brain-ai' ? 'animate-pulse' : 'group-hover:text-blue-500 dark:group-hover:text-blue-400'}`}></i>
+                        <span className="hidden xl:inline text-sm font-medium tracking-wide">
+                            Studio AI
+                        </span>
                     </button>
 
-                    {/* Mobile Hamburger Button - Visível até lg */}
+                    {/* Mobile Hamburger Button */}
                     <button 
                         className="flex flex-col justify-between w-8 h-5 cursor-pointer lg:hidden ml-1"
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -197,7 +199,6 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage = 'home', theme
                 {/* Mobile Menu Overlay */}
                 <div className={`fixed top-0 right-0 w-[85%] h-screen bg-white dark:bg-gray-900 flex flex-col justify-start pt-24 items-center gap-6 transition-transform duration-500 ease-in-out border-l border-gray-200 dark:border-white/10 shadow-[-10px_0_30px_rgba(0,0,0,0.1)] dark:shadow-[-10px_0_30px_rgba(0,0,0,0.5)] ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} lg:hidden z-[60]`}>
                     
-                    {/* Botão de Fechar (X) */}
                     <button 
                         onClick={() => setIsMenuOpen(false)}
                         className="absolute top-6 right-6 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 text-gray-800 dark:text-white transition-all duration-300"
@@ -207,7 +208,6 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage = 'home', theme
                     </button>
 
                     <div className="flex flex-col w-full px-8 gap-4 mb-2">
-                        {/* Botões duplicados no menu para facilidade, caso o usuário prefira o menu grande */}
                         <button
                             onClick={() => { setIsMenuOpen(false); handleLabClick(); }}
                             className="flex items-center justify-center gap-3 px-6 py-3 rounded-xl bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white font-bold active:scale-95 transition-transform"
@@ -220,8 +220,8 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage = 'home', theme
                             onClick={() => { setIsMenuOpen(false); handleBrainAIClick(); }}
                             className="flex items-center justify-center gap-3 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold active:scale-95 transition-transform shadow-lg shadow-blue-500/30"
                         >
-                            <i className="fas fa-brain text-white"></i>
-                            Acessar Brain IA
+                            <i className="fas fa-wand-magic-sparkles text-white"></i>
+                            Acessar Studio AI
                         </button>
                     </div>
 
