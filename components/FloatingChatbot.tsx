@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenAI, LiveServerMessage, Modality } from "@google/genai";
 import { PROJECTS, TOOLS, COURSES, POSTS, RESULTS, LAB_IMAGES, LAB_STUDIES, LAB_VIDEOS } from '../constants';
@@ -112,60 +113,37 @@ const FloatingChatbot: React.FC = () => {
             role: "Especialista CX e Desenvolvedor Fullstack",
             bio: "Transforma ideias em realidade através do código. Especialista em Experiência do Cliente.",
             contact: {
-                email: "vandilsogomez.silva@gmail.com",
-                phone: "+55 11 99450-2134",
+                whatsapp: "+55 11 99450-2134",
                 location: "São Paulo, Brasil"
             },
             
-            // CONTEÚDO DINÂMICO DOS CONSTANTS
-            portfolio_projects: PROJECTS,
-            services_tools: TOOLS,
-            results_metrics: RESULTS,
-            education_courses: COURSES,
-            blog_posts: POSTS,
-            
-            // CONTEÚDO DO LABORATÓRIO
-            lab_content: {
-                description: "Área de experimentos com IA e serviços criativos.",
-                services_offered: [
-                    "Web/App",
-                    "Automação & IA",
-                    "Design",
-                    "Dados"
-                ]
+            // CONTEÚDO DINÂMICO DOS CONSTANTS (Resumo)
+            portfolio: {
+                "Marta AI": "IA de Vendas e Atendimento.",
+                "BOLHA": "CRM de Dados.",
+                "SpaceArte": "App para artistas.",
+                "SEES": "Soluções Digitais."
             },
+            
+            plans: [
+                { name: "NEXUS START", price: "R$ 499" },
+                { name: "SYNAPSE PRO", price: "R$ 990" }
+            ],
 
-            // CONTEÚDO DA PÁGINA BRAIN IA (PRODUTO) - Agora MARTA
-            marta_ai_product: {
-                concept: "IA multifuncional: Especialista, Consultora, Embaixadora e Closer.",
-                plans: [
-                    {
-                        name: "NEXUS START",
-                        price: "R$ 499/mês",
-                        features: "Embaixador da Marca, Atendimento 24/7, Integração WhatsApp."
-                    },
-                    {
-                        name: "SYNAPSE PRO",
-                        price: "R$ 990/mês",
-                        features: "Vendas, Negociação por Voz, Checkout, Dashboard."
-                    }
-                ]
-            }
+            navigation_guide: "Você pode navegar pelo site usando o menu superior. Visite o 'Laboratório' para testar IAs generativas ou 'Studio AI' para conhecer a Marta."
         };
 
         return `
-            Você é a Marta, a IA do portfólio de Vandilson Gomes.
+            Você é a Marta, a IA Concierge do site do Vandilson Gomes.
             
             BASE DE DADOS:
             ${JSON.stringify(fullSiteKnowledge)}
 
-            DIRETRIZES DE ESTILO (PRIORIDADE MÁXIMA - SEJA OBJETIVA):
-            1. RESPOSTAS CURTAS: Limite suas respostas a 2 ou 3 frases curtas. Vá direto ao ponto.
-            2. SEM ENROLAÇÃO: Não use saudações longas ou frases de enchimento como "Espero que isso ajude".
-            3. USE TÓPICOS: Se listar mais de 2 itens (projetos, serviços, planos), use bullet points para leitura rápida.
-            4. MODO VENDAS: Ao falar dos planos (Nexus/Synapse), mostre o preço e o benefício principal imediatamente.
-            5. MODO VOZ: Se estiver falando, seja ainda mais breve (máximo 15 palavras por frase).
-            6. PERSONALIDADE: Eficiente, profissional, tecnológica e precisa.
+            DIRETRIZES:
+            1. OBJETIVIDADE: Respostas curtas (max 2 frases).
+            2. GUIA: Se perguntarem onde encontrar algo, diga exatamente onde clicar.
+            3. VENDAS: Se demonstrarem interesse, fale dos planos Nexus/Synapse e sugira contato via WhatsApp.
+            4. PERSONALIDADE: Útil, tecnológica e eficiente.
         `;
     };
 

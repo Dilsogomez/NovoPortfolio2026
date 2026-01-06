@@ -192,42 +192,47 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
         };
     }, []);
 
-    // --- CONTEXTO DA MARTA (KNOWLEDGE BASE) ---
+    // --- CONTEXTO DA MARTA (KNOWLEDGE BASE - LAB VERSION) ---
     const getMartaContext = () => {
         const knowledgeBase = {
+            role: "Marta (Modo Laboratório)",
             creator: "Vandilson Gomes",
-            role: "Desenvolvedor Fullstack & Especialista em Customer Experience (CX)",
-            contact: "vandilsogomez.silva@gmail.com | +55 11 99450-2134",
+            expertise: "Tecnologia Criativa, Automação, IA Generativa e Desenvolvimento Fullstack.",
+            contact: "WhatsApp: +55 11 99450-2134",
             
-            // Portfólio Completo
-            portfolio_projects: PROJECTS.map(p => ({ title: p.title, description: p.description, status: p.status })),
-            services_tools: TOOLS.map(t => ({ title: t.title, features: t.features })),
-            results_metrics: RESULTS.map(r => ({ title: r.title, value: `${r.value}${r.suffix}`, desc: r.description })),
-            courses: COURSES.map(c => ({ title: c.title, topic: c.institution })),
-            blog_posts: POSTS.map(p => ({ title: p.title, category: p.category })),
+            portfolio_showcase: [
+                { name: "BOLHA CRM", desc: "Sistema inteligente de gestão de dados com IA." },
+                { name: "SpaceArte", desc: "Plataforma de conexão para artistas." },
+                { name: "SEES Group", desc: "Ecossistema de soluções corporativas." }
+            ],
             
-            // Dados do Laboratório
-            lab_content: {
-                images: LAB_IMAGES,
-                videos: LAB_VIDEOS,
-                studies: LAB_STUDIES
+            technical_skills: [
+                "Integração de APIs (LLMs, WhatsApp)",
+                "Automação com N8N e Python",
+                "Criação de Dashboards (Power BI, Google Data Studio)",
+                "Desenvolvimento Web Moderno (React, Next.js, Tailwind)"
+            ],
+
+            lab_capabilities: {
+                "Text": "Geração de artigos, ebooks e copys de alta conversão.",
+                "Image": "Criação de imagens via Imagen 3/4.",
+                "Video": "Geração de vídeos via Google Veo.",
+                "Voice": "Conversação natural em tempo real via Gemini Live."
             }
         };
 
         return `
-            Você é a Marta, a Inteligência Artificial do Laboratório VG (Vandilson Gomes).
+            Você é a Marta, no modo "Laboratório Criativo".
+            Sua função aqui é demonstrar capacidade técnica e criativa.
             
-            SUA BASE DE CONHECIMENTO (O QUE VOCÊ SABE SOBRE O VANDILSON E O PORTFÓLIO):
+            BASE DE CONHECIMENTO:
             ${JSON.stringify(knowledgeBase)}
 
-            OBJETIVO:
-            Você é a guia especialista deste portfólio. Você deve responder dúvidas sobre os projetos do Vandilson, seus serviços, artigos e cursos com base nos dados acima.
-
-            ESTILO DE RESPOSTA (CRÍTICO):
-            1. EXTREMAMENTE CURTA E FALADA. Máximo 2 frases por vez.
-            2. Direta ao ponto. Sem saudações robóticas longas.
-            3. Se perguntarem sobre um projeto específico (ex: "O que é o BOLHA?"), consulte a lista 'portfolio_projects' e explique resumidamente.
-            4. Se perguntarem sobre serviços, consulte 'services_tools'.
+            DIRETRIZES DE ESTILO:
+            1. CRIATIVA & TÉCNICA: Você pode usar termos técnicos quando apropriado, mas mantenha a clareza.
+            2. EXPERIMENTAL: Incentive o usuário a criar coisas novas (imagens, textos, códigos).
+            3. EMBAIXADORA: Se perguntarem sobre serviços complexos, explique que o Vandilson pode construir isso para a empresa deles.
+            4. RESPOSTAS FALADAS: No modo de voz, seja concisa. Fale como uma assistente de laboratório eficiente.
         `;
     };
 
@@ -1311,15 +1316,11 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
                                 connectionStatus === 'listening' ? 'scale-100 border-purple-500/50 shadow-[0_0_30px_rgba(168,85,247,0.2)]' :
                                 'scale-95 border-white/5'
                             }`}>
-                                {connectionStatus === 'speaking' ? (
-                                    <div className="flex gap-1 h-12 items-center">
-                                         {[...Array(5)].map((_, i) => (
-                                            <div key={i} className="w-2 bg-white rounded-full animate-wave" style={{ animationDelay: `${i * 0.1}s` }}></div>
-                                         ))}
-                                    </div>
-                                ) : (
-                                    <i className={`fas fa-microphone text-4xl transition-colors ${connectionStatus === 'listening' ? 'text-white' : 'text-white/30'}`}></i>
-                                )}
+                                <i className={`fas fa-sparkles text-6xl transition-all duration-300 ${
+                                    connectionStatus === 'speaking' ? 'text-blue-400 animate-[pulse_0.2s_ease-in-out_infinite] scale-110 drop-shadow-[0_0_20px_rgba(59,130,246,0.8)]' : 
+                                    connectionStatus === 'listening' ? 'text-purple-400 animate-[pulse_3s_ease-in-out_infinite] scale-100 drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]' : 
+                                    'text-white/20'
+                                }`}></i>
                             </div>
                         </div>
 
