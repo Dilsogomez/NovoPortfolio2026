@@ -261,23 +261,27 @@ export const POSTS: BlogPost[] = [
     },
     {
         id: 3,
-        title: "Facilitando Processos com N8N",
-        excerpt: "Como ferramentas visuais estão permitindo criar fluxos de trabalho organizados de forma mais fácil.",
-        category: "Otimização",
-        date: "Atualizado",
-        readTime: "11 min",
-        imageUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2000&auto=format&fit=crop",
+        title: "Engenharia de Agentes: A Nova Automação",
+        excerpt: "A evolução dos fluxos de trabalho: de scripts lineares para agentes de IA autônomos que raciocinam, decidem e executam tarefas complexas.",
+        category: "Engenharia de IA",
+        date: "Novo",
+        readTime: "8 min",
+        imageUrl: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=2000&auto=format&fit=crop",
         author: "Vandilson Gomes",
-        authorRole: "DevOps",
+        authorRole: "AI Engineer",
         content: `
-            <p>A gestão inteligente de tarefas é aliada da produtividade. Transferir dados e organizar informações são tarefas que podem ser facilitadas por sistemas. Ferramentas como N8N ajudam a deixar o fluxo de trabalho mais leve.</p>
+            <p>A automação tradicional baseada em regras (RPA) atingiu um teto. O futuro pertence à Engenharia de Agentes (Agentic Workflows).</p>
 
-            <h2>Por que N8N? A Vantagem Visual</h2>
-            <p>Você visualiza o dado fluindo de um ponto A para um ponto B. Isso traz clareza:</p>
-            <ul>
-                <li><strong>Conectividade:</strong> Conecta plataformas para que elas conversem entre si facilmente.</li>
-                <li><strong>Organização:</strong> Permite criar fluxos lógicos visualmente, oferecendo flexibilidade.</li>
-            </ul>
+            <h2>Do Script ao Raciocínio</h2>
+            <p>Enquanto a automação clássica segue um "se isso, então aquilo", os Agentes de IA possuem capacidade de raciocínio. Eles não apenas seguem instruções; eles avaliam o contexto, decidem a melhor ferramenta a usar e corrigem seus próprios erros em tempo real.</p>
+
+            <h2>Orquestração Multi-Agente</h2>
+            <p>Imagine uma equipe digital onde um agente analisa dados, outro redige o relatório e um terceiro envia o email. Frameworks modernos como Google Genkit permitem criar esses ecossistemas colaborativos.</p>
+            
+            <blockquote>"Não estamos mais programando passos. Estamos programando objetivos e dando aos agentes as ferramentas para alcançá-los."</blockquote>
+
+            <h2>Aplicação Prática</h2>
+            <p>Isso transforma operações complexas, como triagem jurídica ou análise financeira, em processos fluidos e autônomos, liberando o potencial humano para a estratégia criativa.</p>
         `
     },
     {
@@ -367,18 +371,26 @@ export const LAB_STUDIES: LabStudy[] = [
 export const LAB_VIDEOS: LabVideo[] = [
     {
         id: 1,
-        title: "Demo: Assistente de Vendas",
-        description: "Demonstração de como tornar a negociação mais clara.",
-        thumbnailUrl: "https://images.unsplash.com/photo-1596524430615-b46475ddff6e?q=80&w=1000&auto=format&fit=crop",
-        videoUrl: "", 
-        duration: "Automático"
+        title: "Visão Computacional na Prática",
+        description: "IA identificando peças automotivas e danos em tempo real para o projeto OC+.",
+        thumbnailUrl: "https://images.unsplash.com/photo-1555255707-c07966088b7b?q=80&w=1000&auto=format&fit=crop",
+        videoUrl: "",
+        duration: "02:14"
     },
     {
         id: 2,
-        title: "Timelapse: Workflow Facilitado",
-        description: "Construção de fluxo para organizar processos no N8N.",
+        title: "Dashboard em Tempo Real",
+        description: "Visualização de dados complexos do sistema BOLHA transformados em insights claros.",
         thumbnailUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1000&auto=format&fit=crop",
         videoUrl: "",
-        duration: "Automático"
+        duration: "01:45"
+    },
+    {
+        id: 3,
+        title: "Automação de Atendimento",
+        description: "Fluxo automatizado no N8N gerenciando leads simultâneos com personalização via LLM.",
+        thumbnailUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1000&auto=format&fit=crop",
+        videoUrl: "",
+        duration: "03:20"
     }
 ];

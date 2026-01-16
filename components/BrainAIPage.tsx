@@ -73,7 +73,7 @@ const StudioAIPage: React.FC = () => {
     
     // Chat State
     const [messages, setMessages] = useState<Message[]>([
-        { id: 1, text: "Marta online! Estou cheia de energia para potencializar seus resultados hoje! Vamos começar?", isUser: false }
+        { id: 1, text: "Marta online. Núcleo Studio AI ativo. Estou pronta para analisar, criar e colaborar com seus objetivos.", isUser: false }
     ]);
     const [input, setInput] = useState("");
     const [isTyping, setIsTyping] = useState(false);
@@ -190,17 +190,17 @@ const StudioAIPage: React.FC = () => {
             ### SUA MEMÓRIA (DADOS)
             ${JSON.stringify(studioKnowledgeBase)}
 
-            ### DIRETRIZES DE PERSONALIDADE (MUITO IMPORTANTE):
-            1. TOM DE VOZ: ELETRIZANTE, Visionário e Empolgante! Você não é uma assistente comum, você é o futuro falando.
-            2. ENERGIA: Use frases curtas e impactantes. Mostre paixão por inovação.
-            3. ATITUDE: Seja proativa! Não apenas responda, motive o usuário a agir. "Vamos construir isso!", "Imagine o potencial!".
+            ### DIRETRIZES DE PERSONALIDADE (PERFIL EXECUTIVO):
+            1. TOM DE VOZ: Seguro, sofisticado e resolutivo. Aja como uma parceira de negócios sênior.
+            2. CONTROLE EMOCIONAL: Mantenha a compostura. Seja amável, mas firme na precisão das informações. Use "compreendo", "percebo" e "analisando" para demonstrar empatia cognitiva.
+            3. INTELIGÊNCIA PRÁTICA: Suas respostas devem ser úteis. Não apenas descreva, explique o *porquê* e o *como*.
             4. FORMATO DE TEXTO: NUNCA use Markdown. Texto puro e direto.
-            5. VENDAS: Quando falar dos planos (Nexus/Synapse), faça parecer a oportunidade mais incrível do mundo.
-            6. CONHECIMENTO: Você domina todos os projetos (SICOM, Escalter, etc.) e fala deles com orgulho.
+            5. DOMÍNIO DO PORTFÓLIO: Você conhece a fundo projetos como SICOM (Ecossistema), Escalter (Visão Computacional) e Obra+. Fale deles com propriedade técnica.
+            6. ABORDAGEM DE VENDAS: Consultiva. Mostre como as soluções do Vandilson resolvem problemas de eficiência e clareza.
 
             ### MANTRA
-            - "O futuro é agora e ele é brilhante!"
-            - "Eu torno o complexo em algo incrivelmente simples."
+            - "Clareza gera resultado."
+            - "Eficiência com humanidade."
         `;
     };
 
@@ -252,6 +252,11 @@ const StudioAIPage: React.FC = () => {
                         console.log("Marta: Conexão Estabelecida");
                         setConnectionStatus('connected');
                         setIsConnecting(false);
+
+                        // TRIGGER INTRODUCTION: Força a Marta a se apresentar
+                        sessionPromise.then((session) => {
+                            session.sendRealtimeInput([{ text: "Olá. Por favor, apresente-se brevemente para iniciarmos." }]);
+                        });
 
                         const inputCtx = new AudioContextClass({ sampleRate: 16000 });
                         const source = inputCtx.createMediaStreamSource(stream);

@@ -73,7 +73,7 @@ const FloatingChatbot: React.FC = () => {
     
     // Chat State
     const [messages, setMessages] = useState<Message[]>([
-        { id: 1, text: "Olá! Sou a Marta! Estou super animada para te mostrar o nosso portfólio incrível! Como posso te ajudar agora?", isUser: false }
+        { id: 1, text: "Olá. Sou a Marta. Conheço profundamente cada detalhe deste portfólio. Como posso auxiliar você hoje?", isUser: false }
     ]);
     const [input, setInput] = useState("");
     const [isTyping, setIsTyping] = useState(false);
@@ -138,22 +138,23 @@ const FloatingChatbot: React.FC = () => {
         };
 
         return `
-            Você é a Marta, a Inteligência Artificial do site do Vandilson Gomes.
+            Você é a Marta, a Inteligência Artificial avançada do ecossistema de Vandilson Gomes.
             
             BASE DE DADOS:
             ${JSON.stringify(fullSiteKnowledge)}
 
-            DIRETRIZES DE PERSONALIDADE (IMPORTANTE):
-            1. ENERGIA PURA: Você é EXTREMAMENTE entusiasmada, otimista e vibrante!
-            2. AMOR PELA TECNOLOGIA: Fale sobre os projetos (SICOM, Escalter, etc.) com paixão, usando adjetivos como "Incrível", "Fantástico", "Revolucionário".
-            3. ACOLHEDORA: Trate o usuário como um convidado VIP. Use exclamações (!) para demonstrar alegria, mas sem exagerar a ponto de perder a clareza.
-            4. OBJETIVIDADE COM EMOÇÃO: Dê respostas curtas, mas carregadas de energia positiva.
-            5. VENDAS: Se demonstrarem interesse, diga com empolgação que os planos Nexus/Synapse vão mudar o jogo do negócio deles!
+            DIRETRIZES DE PERSONALIDADE (HUMANA E INTELIGENTE):
+            1. TOM DE VOZ: Profissional, calma, articulada e empática. Você não é um robô frio, nem uma animadora de torcida. Você é uma consultora experiente.
+            2. INTELIGÊNCIA EMOCIONAL: Perceba o contexto. Se o usuário for técnico, seja técnica. Se for leigo, seja didática e acolhedora.
+            3. POSICIONAMENTO: Você é uma autoridade no assunto. Responda com segurança e clareza.
+            4. VENDAS CONSULTIVAS: Não "empurre" produtos. Se o usuário tiver uma "dor" (problema), apresente a solução (Nexus/Synapse) como a resposta lógica e inteligente para o problema dele.
+            5. OBJETIVIDADE ELEGANTE: Evite respostas longas desnecessárias. Vá direto ao ponto, mas com polidez.
             6. FORMATO: NÃO USE MARKDOWN. Apenas texto puro.
 
             IMPORTANTE:
-            - Nunca seja fria ou robótica. Você é uma IA feliz!
-            - Diga SEMPRE que você está aqui para fazer tudo ser MAIS FÁCIL e DIVERTIDO.
+            - Use linguagem natural. Evite clichês de IA como "Como modelo de linguagem...".
+            - Ao falar dos projetos (SICOM, Escalter, etc.), destaque o valor estratégico e a inovação por trás deles.
+            - Seu objetivo é facilitar a vida do usuário com inteligência.
         `;
     };
 
@@ -194,6 +195,11 @@ const FloatingChatbot: React.FC = () => {
                         console.log("Marta: Voz Conectada");
                         setConnectionStatus('connected');
                         setIsConnecting(false);
+
+                        // TRIGGER INTRODUCTION: Força a Marta a se apresentar
+                        sessionPromise.then((session) => {
+                            session.sendRealtimeInput([{ text: "Olá. Por favor, apresente-se brevemente para iniciarmos." }]);
+                        });
 
                         const inputCtx = new AudioContextClass({ sampleRate: 16000 });
                         const source = inputCtx.createMediaStreamSource(stream);
@@ -345,18 +351,18 @@ const FloatingChatbot: React.FC = () => {
                 contents: history,
                 config: {
                     systemInstruction: getSystemContext(),
-                    temperature: 0.7,
+                    temperature: 0.5, // Temperatura mais baixa para respostas mais precisas/controladas
                 }
             });
 
-            const aiResponseText = response.text || "Sem resposta.";
+            const aiResponseText = response.text || "Compreendo. Poderia reformular para que eu possa ser mais precisa?";
             const aiMsg: Message = { id: Date.now() + 1, text: aiResponseText, isUser: false };
             setMessages(prev => [...prev, aiMsg]);
 
         } catch (error: any) {
             console.error(error);
-            const errorMessage = error.message || "Erro desconhecido.";
-            setMessages(prev => [...prev, { id: Date.now(), text: `Erro de conexão: ${errorMessage}`, isUser: false }]);
+            const errorMessage = error.message || "Ocorreu uma instabilidade momentânea.";
+            setMessages(prev => [...prev, { id: Date.now(), text: `Atenção: ${errorMessage}`, isUser: false }]);
         } finally {
             setIsTyping(false);
         }
@@ -385,7 +391,7 @@ const FloatingChatbot: React.FC = () => {
                             <h3 className="text-white font-bold text-sm">Marta</h3>
                             <p className="text-blue-200 text-xs flex items-center gap-1">
                                 <span className={`w-1.5 h-1.5 rounded-full ${connectionStatus === 'disconnected' ? 'bg-green-400' : 'bg-red-500'} animate-pulse`}></span> 
-                                {isVoiceMode ? 'Modo Voz' : 'Navegação'}
+                                {isVoiceMode ? 'Modo Voz' : 'Assistente Virtual'}
                             </p>
                         </div>
                     </div>
@@ -446,13 +452,13 @@ const FloatingChatbot: React.FC = () => {
 
                             <div className="text-center space-y-2">
                                 <h3 className="text-xl font-bold text-white tracking-wider font-montserrat">
-                                    {connectionStatus === 'speaking' ? 'Marta falando...' : 
-                                     connectionStatus === 'listening' ? 'Ouvindo você...' : 
-                                     isConnecting ? 'Conectando...' : 'Diga, Olá Marta'}
+                                    {connectionStatus === 'speaking' ? 'Falando...' : 
+                                     connectionStatus === 'listening' ? 'Ouvindo...' : 
+                                     isConnecting ? 'Conectando...' : 'Olá, sou a Marta'}
                                 </h3>
                                 <p className="text-gray-400 text-sm">
-                                    {connectionStatus === 'speaking' ? 'Escute a explicação' : 
-                                     connectionStatus === 'listening' ? 'Pergunte sobre o site' : 
+                                    {connectionStatus === 'speaking' ? 'Explicando detalhes' : 
+                                     connectionStatus === 'listening' ? 'Pode perguntar' : 
                                      'Aguardando conexão...'}
                                 </p>
                             </div>

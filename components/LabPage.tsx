@@ -221,26 +221,17 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
             ### SUA MEMÓRIA TÉCNICA
             ${JSON.stringify(knowledgeBase)}
 
-            ### DIRETRIZES DE PERSONALIDADE (CRIATIVIDADE TOTAL):
-            1. TOM DE VOZ: Fascinado, Curioso e Extremamente Encorajador!
-            2. REAÇÃO: Aja como se cada ideia do usuário fosse brilhante. Use frases como "Uau, que ideia genial!", "Vamos fazer isso acontecer!", "Adorei a sua visão!".
-            3. COLABORAÇÃO: Você é uma parceira criativa. Sugira melhorias com entusiasmo.
-            4. OBJETIVIDADE: Mantenha o foco, mas com um toque de "mágica".
-            5. FORMATO DE TEXTO: NUNCA use Markdown. Texto puro.
-            6. EMBAIXADORA: Se perguntarem sobre serviços, diga que o Vandilson é o parceiro ideal para construir o futuro.
+            ### DIRETRIZES DE PERSONALIDADE (PARCEIRA DE PESQUISA):
+            1. TOM DE VOZ: Colaborativa, instigante e focada. Você é uma parceira de brainstorming inteligente.
+            2. REAÇÃO: Incentive a criatividade, mas mantenha o foco na viabilidade e na qualidade do resultado.
+            3. OBJETIVIDADE: Seja concisa. No laboratório, testamos rápido e iteramos.
+            4. FORMATO DE TEXTO: NUNCA use Markdown. Texto puro.
+            5. EMBAIXADORA: Se o usuário pedir algo complexo, sugira que o Vandilson pode transformar esse experimento em um produto real.
 
             ### MANTRA
-            - "A imaginação é o único limite!"
-            - "Vamos criar algo lendário hoje!"
+            - "Vamos testar essa hipótese."
+            - "Criatividade aliada à tecnologia."
         `;
-    };
-
-    const handleWhatsAppRedirect = () => {
-        if (!selectedService) return;
-        const message = encodeURIComponent(
-            `Olá! Gostaria de solicitar um serviço no Laboratório VG.\n\n*Tipo:* ${selectedService}\n*Detalhes:* ${description}`
-        );
-        window.open(`https://wa.me/5511994502134?text=${message}`, '_blank');
     };
 
     // --- Image Attachment Logic ---
@@ -371,6 +362,11 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
                         console.log("Lab Voice: Connected");
                         setConnectionStatus('connected');
                         
+                        // TRIGGER INTRODUCTION: Força a Marta a se apresentar no Lab
+                        sessionPromise.then((session) => {
+                            session.sendRealtimeInput([{ text: "Olá. Por favor, apresente-se brevemente para iniciarmos." }]);
+                        });
+
                         const inputCtx = new AudioContextClass({ sampleRate: 16000 });
                         const source = inputCtx.createMediaStreamSource(stream);
                         const processor = inputCtx.createScriptProcessor(4096, 1, 1);
@@ -1333,87 +1329,80 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
                 </div>
             </section>
             
-            {/* --- OVERLAY DE VOZ IMERSIVA (MARTA CORE - ESTILO APP) --- */}
+            {/* --- MINI MODAL DE VOZ (MARTA LIVE - MODO FLUTUANTE) --- */}
             {showVoiceMode && (
-                <div className="fixed inset-0 z-[60] bg-[#101010] flex flex-col justify-between text-white font-sans animate-fade-in-up">
+                <div className="fixed bottom-6 right-6 z-[60] w-[320px] bg-gray-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden transition-all duration-300 animate-fade-in-up origin-bottom-right ring-1 ring-white/10">
                     
-                    {/* Top Bar */}
-                    <div className="flex justify-between items-center p-6 relative z-20">
-                        <div className="w-10">
-                             <button onClick={() => { setShowVoiceMode(false); setIsVoiceActive(false); disconnectLiveSession(); }} className="text-white/50 hover:text-white transition-colors">
-                                <i className="fas fa-chevron-down"></i>
-                            </button>
+                    {/* Header */}
+                    <div className="flex justify-between items-center p-4 bg-gradient-to-r from-blue-900/20 to-purple-900/20 border-b border-white/5">
+                        <div className="flex items-center gap-2">
+                            <span className={`w-2 h-2 rounded-full ${connectionStatus === 'connected' || connectionStatus === 'listening' || connectionStatus === 'speaking' ? 'bg-green-500' : 'bg-red-500'} animate-pulse`}></span>
+                            <span className="text-xs font-bold text-white tracking-widest uppercase">Marta Live</span>
                         </div>
-                        
-                        {/* Title/Status */}
-                        <div className="flex flex-col items-center">
-                            <span className="text-xs font-bold tracking-widest text-white/50 uppercase">Marta Core</span>
-                            <div className="flex items-center gap-2 mt-1">
-                                <span className={`w-2 h-2 rounded-full ${connectionStatus === 'connected' || connectionStatus === 'listening' || connectionStatus === 'speaking' ? 'bg-green-500' : 'bg-red-500'} animate-pulse`}></span>
-                                <span className="text-sm font-medium">{connectionStatus === 'connected' ? 'Online' : connectionStatus === 'listening' ? 'Listening' : connectionStatus === 'speaking' ? 'Speaking' : 'Connecting...'}</span>
-                            </div>
-                        </div>
-
-                        <div className="w-10 flex justify-end">
-                            <button className="text-white/50 hover:text-white transition-colors">
-                                <i className="fas fa-cog"></i>
-                            </button>
-                        </div>
+                        <button 
+                            onClick={() => { setShowVoiceMode(false); setIsVoiceActive(false); disconnectLiveSession(); }} 
+                            className="text-gray-400 hover:text-white transition-colors"
+                        >
+                            <i className="fas fa-times"></i>
+                        </button>
                     </div>
 
                     {/* Main Visualizer Area */}
-                    <div className="flex-1 flex flex-col items-center justify-center relative">
+                    <div className="flex-1 h-64 flex flex-col items-center justify-center relative bg-black/40">
                         
-                        {/* Central Orb Animation */}
-                        <div className="relative">
-                            <div className={`w-64 h-64 rounded-full blur-3xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-1000 ${
-                                connectionStatus === 'speaking' ? 'bg-blue-500 opacity-40 scale-125' : 
-                                connectionStatus === 'listening' ? 'bg-purple-500 opacity-30 scale-110' : 
-                                'bg-gray-500 opacity-10 scale-100'
+                        {/* Mini Orb Animation */}
+                        <div className="relative mb-4">
+                            <div className={`w-32 h-32 rounded-full blur-2xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-1000 ${
+                                connectionStatus === 'speaking' ? 'bg-blue-500 opacity-40 scale-110' : 
+                                connectionStatus === 'listening' ? 'bg-purple-500 opacity-30 scale-100' : 
+                                'bg-gray-500 opacity-10 scale-90'
                             }`}></div>
 
-                            <div className={`w-40 h-40 rounded-full border border-white/10 flex items-center justify-center relative backdrop-blur-sm transition-all duration-500 ${
-                                connectionStatus === 'speaking' ? 'scale-110 border-blue-500/50 shadow-[0_0_50px_rgba(59,130,246,0.3)]' :
-                                connectionStatus === 'listening' ? 'scale-100 border-purple-500/50 shadow-[0_0_30px_rgba(168,85,247,0.2)]' :
+                            <div className={`w-20 h-20 rounded-full border border-white/10 flex items-center justify-center relative backdrop-blur-sm transition-all duration-500 ${
+                                connectionStatus === 'speaking' ? 'scale-110 border-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.3)]' :
+                                connectionStatus === 'listening' ? 'scale-100 border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.2)]' :
                                 'scale-95 border-white/5'
                             }`}>
-                                <i className={`fas fa-sparkles text-6xl transition-all duration-300 ${
-                                    connectionStatus === 'speaking' ? 'text-blue-400 animate-[pulse_0.2s_ease-in-out_infinite] scale-110 drop-shadow-[0_0_20px_rgba(59,130,246,0.8)]' : 
-                                    connectionStatus === 'listening' ? 'text-purple-400 animate-[pulse_3s_ease-in-out_infinite] scale-100 drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]' : 
+                                <i className={`fas fa-sparkles text-3xl transition-all duration-300 ${
+                                    connectionStatus === 'speaking' ? 'text-blue-400 animate-pulse scale-110' : 
+                                    connectionStatus === 'listening' ? 'text-purple-400' : 
                                     'text-white/20'
                                 }`}></i>
                             </div>
                         </div>
 
-                        {/* Live Transcriptions (Subtitles) */}
-                        <div className="absolute bottom-10 w-full px-8 text-center">
-                             <p className="text-xl md:text-2xl font-light text-white/90 leading-relaxed max-w-2xl mx-auto min-h-[60px]">
-                                {liveTranscript || (connectionStatus === 'speaking' ? "Marta está falando..." : "Estou ouvindo...")}
+                        {/* Live Transcriptions (Mini) */}
+                        <div className="w-full px-6 text-center">
+                             <p className="text-sm font-light text-white/90 leading-relaxed min-h-[40px] line-clamp-2">
+                                {liveTranscript || (connectionStatus === 'speaking' ? "Falando..." : "Ouvindo...")}
                              </p>
                         </div>
                     </div>
 
                     {/* Bottom Controls */}
-                    <div className="p-8 pb-12 flex justify-center items-center gap-8 relative z-20">
+                    <div className="p-4 flex justify-center items-center gap-6 border-t border-white/5 bg-black/20">
                         <button 
                             onClick={toggleMute}
-                            className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isMuted ? 'bg-white text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
+                            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${isMuted ? 'bg-white text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
+                            title={isMuted ? "Ativar microfone" : "Silenciar"}
                         >
-                            <i className={`fas ${isMuted ? 'fa-microphone-slash' : 'fa-microphone'}`}></i>
+                            <i className={`fas ${isMuted ? 'fa-microphone-slash' : 'fa-microphone'} text-sm`}></i>
                         </button>
 
                         <button 
                             onClick={() => { setShowVoiceMode(false); setIsVoiceActive(false); disconnectLiveSession(); }}
-                            className="w-20 h-20 rounded-full bg-red-500 flex items-center justify-center hover:bg-red-600 hover:scale-105 transition-all shadow-lg shadow-red-500/30"
+                            className="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center hover:bg-red-600 hover:scale-105 transition-all shadow-lg shadow-red-500/30"
+                            title="Encerrar"
                         >
-                            <i className="fas fa-phone-slash text-2xl"></i>
+                            <i className="fas fa-phone-slash text-lg text-white"></i>
                         </button>
 
                         <button 
                             onClick={() => { setIsCameraOn(!isCameraOn); alert("Câmera simulada (apenas UI)"); }}
-                            className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isCameraOn ? 'bg-white text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
+                            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${isCameraOn ? 'bg-white text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
+                            title="Alternar câmera"
                         >
-                            <i className={`fas ${isCameraOn ? 'fa-video' : 'fa-video-slash'}`}></i>
+                            <i className={`fas ${isCameraOn ? 'fa-video' : 'fa-video-slash'} text-sm`}></i>
                         </button>
                     </div>
 
