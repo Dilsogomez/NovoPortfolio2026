@@ -24,6 +24,27 @@ export const SOCIAL_LINKS: SocialLink[] = [
 
 export const PROJECTS: Project[] = [
     {
+        title: "SICOM | Ecossistema Digital",
+        description: "Plataforma de agência criativa com Next.js e Genkit (Google AI). Inclui SI Studio (IA Conversacional), ferramentas de desenho para 3D e geração de estratégias de marketing em tempo real.",
+        image: "https://i.pinimg.com/736x/05/f4/72/05f472825f1261ca135921a705baf0b4.jpg",
+        link: "https://wa.me/5511994502134",
+        status: 'Online'
+    },
+    {
+        title: "Escalter | Visão Computacional",
+        description: "SaaS de análise de imagens via IA com 4 módulos: NutriScan, AutoDano, DocResumo e ItemFinder. Inclui Dashboard, Admin Financeiro e animações Three.js.",
+        image: "https://i.pinimg.com/736x/ea/2d/b1/ea2db127c0c1b57c3304bbd9d75f0e10.jpg",
+        link: "https://wa.me/5511994502134",
+        status: 'Online'
+    },
+    {
+        title: "Obra+ | SaaS Construção",
+        description: "Plataforma multitenant completa para gestão civil. Dashboards financeiros, controle de equipes, orçamentos e IA (Genkit). Stack moderna com Next.js 15, ShadCN e Firebase.",
+        image: "https://i.pinimg.com/736x/b3/d7/27/b3d7271776ea07cddac692c18494c049.jpg",
+        link: "https://wa.me/5511994502134",
+        status: 'Online'
+    },
+    {
         title: "OC+ | Oficina & Controle",
         description: "Plataforma Phygital que utiliza IA (Gemini) para revolucionar a reparação automotiva. Scanner de danos, análise jurídica e gestão de leads para oficinas.",
         image: "https://i.pinimg.com/736x/3d/58/03/3d5803f378a7b1d57a91f040376bcd2c.jpg",

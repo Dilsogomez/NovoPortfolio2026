@@ -109,6 +109,12 @@ const FloatingChatbot: React.FC = () => {
     }, []);
 
     const getSystemContext = () => {
+        // Mapeia dinamicamente todos os projetos do constants.ts
+        const projectsMap = PROJECTS.reduce((acc, project) => {
+            acc[project.title] = project.description;
+            return acc;
+        }, {} as Record<string, string>);
+
         const fullSiteKnowledge = {
             owner: "Vandilson Gomes",
             role: "Especialista CX e Desenvolvedor Fullstack",
@@ -118,13 +124,10 @@ const FloatingChatbot: React.FC = () => {
                 location: "São Paulo, Brasil"
             },
             
-            // CONTEÚDO DINÂMICO DOS CONSTANTS (Resumo)
-            portfolio: {
-                "Marta AI": "IA para tornar vendas e atendimento mais claros e fáceis.",
-                "BOLHA": "CRM de Dados.",
-                "SpaceArte": "App para artistas.",
-                "SEES": "Soluções Digitais."
-            },
+            // CONTEÚDO DINÂMICO DOS PROJETOS (SICOM, Escalter, Obra+, etc)
+            portfolio: projectsMap,
+            
+            services: TOOLS.map(t => t.title).join(", "),
             
             plans: [
                 { name: "NEXUS START", price: "R$ 499" },
@@ -146,6 +149,7 @@ const FloatingChatbot: React.FC = () => {
             3. VENDAS: Se demonstrarem interesse, fale dos planos Nexus/Synapse e sugira contato via WhatsApp.
             4. PERSONALIDADE: Útil, tecnológica e eficiente.
             5. FORMATAÇÃO: NÃO USE MARKDOWN. Não use negrito (**), itálico ou símbolos especiais. Apenas texto puro.
+            6. NOVOS PROJETOS: Você tem conhecimento profundo sobre SICOM, Escalter, Obra+, etc. Use as descrições fornecidas.
             
             IMPORTANTE:
             - NUNCA diga que automatiza ou substitui vendas/atendimento.
@@ -368,7 +372,6 @@ const FloatingChatbot: React.FC = () => {
                     ${isOpen ? 'opacity-100 scale-100 translate-y-0 h-[500px]' : 'opacity-0 scale-90 translate-y-10 pointer-events-none h-0'}
                 `}
             >
-                {/* ... (Header and Content remain mostly the same, Typewriter updated internally) ... */}
                 {/* Header */}
                 <div className="bg-gradient-to-r from-blue-600 to-purple-800 p-4 flex items-center justify-between shrink-0 z-20 relative">
                     <div className="flex items-center gap-3">

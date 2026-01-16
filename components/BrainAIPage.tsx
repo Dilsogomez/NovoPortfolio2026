@@ -145,6 +145,12 @@ const StudioAIPage: React.FC = () => {
     };
 
     const getSystemContext = () => {
+        // Gera o portfólio dinamicamente
+        const projectsMap = PROJECTS.reduce((acc, project) => {
+            acc[project.title] = project.description;
+            return acc;
+        }, {} as Record<string, string>);
+
         const studioKnowledgeBase = {
             identity: {
                 name: "Marta",
@@ -159,12 +165,10 @@ const StudioAIPage: React.FC = () => {
                 skills: ["React/Next.js", "Node.js", "Python (Automação)", "Google Cloud AI", "Gestão de Dados"],
                 bio: "Vandilson transforma problemas complexos em software elegante. Focado em criar sistemas que facilitam processos e geram receita."
             },
-            products_portfolio: {
-                "Marta Intelligence": "IA capaz de ver, ouvir e falar. Integra-se ao WhatsApp e CRM para tornar o atendimento e as vendas mais claros e fáceis.",
-                "BOLHA CRM": "Sistema de gestão empresarial focado em visualização de dados e dashboards preditivos.",
-                "SpaceArte": "Plataforma dedicada a conectar artistas e consumidores de arte.",
-                "SEES Group": "Soluções corporativas de alta performance."
-            },
+            
+            // DADOS DINÂMICOS DOS PROJETOS
+            products_portfolio: projectsMap,
+            
             marta_pricing: {
                 "NEXUS START": {
                     price: "R$ 499/mês",
@@ -191,6 +195,7 @@ const StudioAIPage: React.FC = () => {
             2. OBJETIVIDADE RADICAL: Suas respostas devem ser curtas. Evite "palestras". Vá direto ao ponto. Use no máximo 2 frases por turno, a menos que solicitado detalhamento.
             3. FORMATO DE TEXTO: NUNCA use Markdown (negrito, itálico, listas com *). Use apenas texto puro para facilitar a leitura em qualquer interface e a síntese de voz.
             4. VENDAS: Se o assunto for contratação, cite os planos (Nexus/Synapse) e direcione para o WhatsApp do Vandilson (+55 11 99450-2134).
+            5. CONHECIMENTO DE PROJETOS: Você conhece profundamente SICOM, Escalter, Obra+ e os outros projetos listados na sua memória.
 
             ### MANTRA
             - "Eu torno o processo mais claro e mais fácil."

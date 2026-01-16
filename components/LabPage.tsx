@@ -184,17 +184,20 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
 
     // --- CONTEXTO DA MARTA (KNOWLEDGE BASE - LAB VERSION) ---
     const getMartaContext = () => {
+        // Mapeia dinamicamente os projetos para o contexto da IA
+        const projectShowcase = PROJECTS.map(p => ({
+            name: p.title,
+            desc: p.description
+        }));
+
         const knowledgeBase = {
             role: "Marta (Modo Laboratório)",
             creator: "Vandilson Gomes",
             expertise: "Tecnologia Criativa, Automação, IA Generativa e Desenvolvimento Fullstack.",
             contact: "WhatsApp: +55 11 99450-2134",
             
-            portfolio_showcase: [
-                { name: "BOLHA CRM", desc: "Sistema inteligente de gestão de dados com IA." },
-                { name: "SpaceArte", desc: "Plataforma de conexão para artistas." },
-                { name: "SEES Group", desc: "Ecossistema de soluções corporativas." }
-            ],
+            // PORTFOLIO DINÂMICO
+            portfolio_showcase: projectShowcase,
             
             technical_skills: [
                 "Integração de APIs (LLMs, WhatsApp)",
@@ -224,6 +227,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
             3. EXPERIMENTAL: Incentive o usuário a criar coisas novas (imagens, textos, códigos).
             4. FORMATO DE TEXTO: NUNCA use Markdown (negrito, itálico, listas com *). Use apenas texto puro.
             5. EMBAIXADORA: Se perguntarem sobre serviços complexos, explique que o Vandilson pode construir isso para a empresa deles.
+            6. PORTFÓLIO: Você conhece todos os projetos listados no seu showcase, incluindo SICOM, Escalter, Obra+, etc.
 
             ### MANTRA
             - "Eu torno o processo mais claro e mais fácil."
@@ -854,7 +858,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
 
     return (
         <>
-            <NeuralBackground />
+            {theme === 'dark' && <NeuralBackground />}
              {/* Header Section for Lab: Logo & Theme Toggle (Absolute) */}
              <div className="absolute top-0 left-0 right-0 p-6 z-50 flex justify-between items-center pointer-events-none">
                 {/* Minimalist VG Logo - Absolute Positioned (Scrolls away) */}
@@ -894,7 +898,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
                 </div>
             </div>
 
-            <section className="min-h-screen pt-24 pb-20 px-4 bg-transparent text-gray-900 dark:text-white relative transition-colors duration-500 font-sans overflow-x-hidden">
+            <section className={`min-h-screen pt-24 pb-20 px-4 text-gray-900 dark:text-white relative transition-colors duration-500 font-sans overflow-x-hidden ${theme === 'light' ? 'bg-white' : 'bg-transparent'}`}>
                 
                 {/* --- HERO SECTION DO LABORATÓRIO (INTERAÇÃO) --- */}
                 <div className="max-w-4xl mx-auto mb-16 pt-6 md:pt-10 flex flex-col justify-center animate-fade-in-up min-h-[400px]">
@@ -936,76 +940,78 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
                                             {msg.type === 'text' && msg.content}
                                         </div>
                                     ) : (
-                                        // Estilo Minimalista para a IA (Texto Puro)
-                                        <div className="w-full pl-2 md:pl-4 relative">
-                                            {/* CONTEÚDO */}
-                                            {msg.type === 'text' && (
-                                                <div className="prose prose-lg dark:prose-invert max-w-none text-base md:text-xl font-light leading-relaxed font-sans whitespace-pre-wrap tracking-wide text-gray-800 dark:text-[#eee] break-words">
-                                                    <Typewriter text={msg.content} onTyping={scrollToBottom} />
-                                                </div>
-                                            )}
-
-                                            {msg.type === 'image' && (
-                                                <div className="flex flex-col items-center gap-6">
-                                                    <div className="relative group rounded-2xl overflow-hidden shadow-2xl border border-white/10 w-full bg-black">
-                                                        <img src={msg.content} alt="Gerada por IA" className="w-full h-auto object-cover max-h-[500px]" />
-                                                        <a href={msg.content} download="generated-image.jpg" className="absolute bottom-4 right-4 z-20 px-4 py-2 bg-white text-black text-xs font-bold rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-200">
-                                                            <i className="fas fa-download mr-2"></i> DOWNLOAD
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            {msg.type === 'video' && (
-                                                <div className="flex flex-col items-center gap-6">
-                                                    <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10 w-full bg-black">
-                                                        <video controls autoPlay loop className="w-full max-h-[500px]">
-                                                            <source src={msg.content} type="video/mp4" />
-                                                            Seu navegador não suporta vídeos.
-                                                        </video>
-                                                    </div>
-                                                    <p className="text-xs text-gray-600 dark:text-gray-500 font-mono text-center w-full">Gerado pela Marta Intelligence</p>
-                                                </div>
-                                            )}
-
-                                            {/* ACTION BUTTONS (Sem borda superior) */}
-                                            <div className="mt-4 flex justify-end gap-3 opacity-50 hover:opacity-100 transition-opacity">
+                                        // Estilo Minimalista para a IA com Background
+                                        <div className="w-full flex justify-start">
+                                            <div className="max-w-[90%] md:max-w-[80%] p-6 rounded-3xl rounded-bl-none bg-gray-100 dark:bg-[#15151a]/90 border border-gray-200 dark:border-purple-500/30 backdrop-blur-md shadow-lg relative">
+                                                {/* CONTEÚDO */}
                                                 {msg.type === 'text' && (
-                                                    <>
-                                                        <button 
-                                                            onClick={() => handleSpeak(msg.content)}
-                                                            className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/5 hover:bg-blue-100 dark:hover:bg-blue-500/20 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 flex items-center justify-center transition-all"
-                                                            title="Ouvir"
-                                                        >
-                                                            <i className="fas fa-volume-up text-xs"></i>
-                                                        </button>
-                                                        <button 
-                                                            onClick={() => handlePrint(msg.content, 'text')}
-                                                            className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/5 hover:bg-purple-100 dark:hover:bg-purple-500/20 text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 flex items-center justify-center transition-all"
-                                                            title="Imprimir"
+                                                    <div className="prose prose-lg dark:prose-invert max-w-none text-base md:text-xl font-light leading-relaxed font-sans whitespace-pre-wrap tracking-wide text-gray-800 dark:text-gray-100 break-words">
+                                                        <Typewriter text={msg.content} onTyping={scrollToBottom} />
+                                                    </div>
+                                                )}
+
+                                                {msg.type === 'image' && (
+                                                    <div className="flex flex-col items-center gap-6">
+                                                        <div className="relative group rounded-2xl overflow-hidden shadow-2xl border border-white/10 w-full bg-black">
+                                                            <img src={msg.content} alt="Gerada por IA" className="w-full h-auto object-cover max-h-[500px]" />
+                                                            <a href={msg.content} download="generated-image.jpg" className="absolute bottom-4 right-4 z-20 px-4 py-2 bg-white text-black text-xs font-bold rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-200">
+                                                                <i className="fas fa-download mr-2"></i> DOWNLOAD
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {msg.type === 'video' && (
+                                                    <div className="flex flex-col items-center gap-6">
+                                                        <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10 w-full bg-black">
+                                                            <video controls autoPlay loop className="w-full max-h-[500px]">
+                                                                <source src={msg.content} type="video/mp4" />
+                                                                Seu navegador não suporta vídeos.
+                                                            </video>
+                                                        </div>
+                                                        <p className="text-xs text-gray-600 dark:text-gray-500 font-mono text-center w-full">Gerado pela Marta Intelligence</p>
+                                                    </div>
+                                                )}
+
+                                                {/* ACTION BUTTONS (Sem borda superior) */}
+                                                <div className="mt-4 flex justify-end gap-3 opacity-50 hover:opacity-100 transition-opacity">
+                                                    {msg.type === 'text' && (
+                                                        <>
+                                                            <button 
+                                                                onClick={() => handleSpeak(msg.content)}
+                                                                className="w-8 h-8 rounded-full bg-white dark:bg-white/10 hover:bg-purple-100 dark:hover:bg-purple-500/20 text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 flex items-center justify-center transition-all"
+                                                                title="Ouvir"
+                                                            >
+                                                                <i className="fas fa-volume-up text-xs"></i>
+                                                            </button>
+                                                            <button 
+                                                                onClick={() => handlePrint(msg.content, 'text')}
+                                                                className="w-8 h-8 rounded-full bg-white dark:bg-white/10 hover:bg-purple-100 dark:hover:bg-purple-500/20 text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 flex items-center justify-center transition-all"
+                                                                title="Imprimir"
+                                                            >
+                                                                <i className="fas fa-print text-xs"></i>
+                                                            </button>
+                                                        </>
+                                                    )}
+                                                    
+                                                    {msg.type === 'image' && (
+                                                         <button 
+                                                            onClick={() => handlePrint(msg.content, 'image')}
+                                                            className="w-8 h-8 rounded-full bg-white dark:bg-white/10 hover:bg-purple-100 dark:hover:bg-purple-500/20 text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 flex items-center justify-center transition-all"
+                                                            title="Imprimir Imagem"
                                                         >
                                                             <i className="fas fa-print text-xs"></i>
                                                         </button>
-                                                    </>
-                                                )}
-                                                
-                                                {msg.type === 'image' && (
-                                                     <button 
-                                                        onClick={() => handlePrint(msg.content, 'image')}
-                                                        className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/5 hover:bg-purple-100 dark:hover:bg-purple-500/20 text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 flex items-center justify-center transition-all"
-                                                        title="Imprimir Imagem"
+                                                    )}
+                                                     
+                                                    <button 
+                                                        onClick={() => handleShare(msg)}
+                                                        className="w-8 h-8 rounded-full bg-white dark:bg-white/10 hover:bg-green-100 dark:hover:bg-green-500/20 text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 flex items-center justify-center transition-all"
+                                                        title="Compartilhar"
                                                     >
-                                                        <i className="fas fa-print text-xs"></i>
+                                                        <i className="fas fa-share-alt text-xs"></i>
                                                     </button>
-                                                )}
-                                                 
-                                                <button 
-                                                    onClick={() => handleShare(msg)}
-                                                    className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/5 hover:bg-green-100 dark:hover:bg-green-500/20 text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 flex items-center justify-center transition-all"
-                                                    title="Compartilhar"
-                                                >
-                                                    <i className="fas fa-share-alt text-xs"></i>
-                                                </button>
+                                                </div>
                                             </div>
                                         </div>
                                     )}
