@@ -24,9 +24,16 @@ export const SOCIAL_LINKS: SocialLink[] = [
 
 export const PROJECTS: Project[] = [
     {
+        title: "OC+ | Oficina & Controle",
+        description: "Plataforma Phygital que utiliza IA (Gemini) para revolucionar a reparação automotiva. Scanner de danos, análise jurídica e gestão de leads para oficinas.",
+        image: "https://i.pinimg.com/736x/3d/58/03/3d5803f378a7b1d57a91f040376bcd2c.jpg",
+        link: "https://wa.me/5511994502134",
+        status: 'Online'
+    },
+    {
         title: "Marta | Artificial Intelligence",
         description: "Uma Mente. Múltiplas Funções. Sistema de IA avançado que se adapta para tornar processos técnicos e comerciais mais claros e fáceis. Processamento de voz e dados em tempo real.",
-        image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=1000&auto=format&fit=crop",
+        image: "https://i.pinimg.com/736x/01/92/fc/0192fcddb8134c5fa7e5ff4df077a72b.jpg",
         link: "https://wa.me/5511994502134",
         status: 'Online'
     },

@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { GoogleGenAI, LiveServerMessage, Modality } from "@google/genai";
 import { PROJECTS, TOOLS, COURSES, POSTS, RESULTS, LAB_IMAGES, LAB_STUDIES, LAB_VIDEOS, GEMINI_API_KEY } from '../constants';
 import { BlogPost } from '../types';
+import NeuralBackground from './NeuralBackground';
 
 type LabTab = 'artigos' | 'videos' | 'imagens' | 'estudos' | 'solicitar';
 
@@ -853,6 +854,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
 
     return (
         <>
+            <NeuralBackground />
              {/* Header Section for Lab: Logo & Theme Toggle (Absolute) */}
              <div className="absolute top-0 left-0 right-0 p-6 z-50 flex justify-between items-center pointer-events-none">
                 {/* Minimalist VG Logo - Absolute Positioned (Scrolls away) */}
@@ -892,14 +894,8 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
                 </div>
             </div>
 
-            <section className="min-h-screen pt-24 pb-20 px-4 bg-gray-50 dark:bg-black text-gray-900 dark:text-white relative transition-colors duration-500 font-sans overflow-x-hidden">
+            <section className="min-h-screen pt-24 pb-20 px-4 bg-transparent text-gray-900 dark:text-white relative transition-colors duration-500 font-sans overflow-x-hidden">
                 
-                {/* Background Decor - Removed white gradient in light mode */}
-                <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-transparent dark:from-blue-900/10 to-transparent pointer-events-none transition-colors duration-500"></div>
-                <div className="absolute inset-0 pointer-events-none opacity-20 dark:opacity-20 opacity-5">
-                    <div className="absolute top-0 left-0 w-full h-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-                </div>
-
                 {/* --- HERO SECTION DO LABORATÓRIO (INTERAÇÃO) --- */}
                 <div className="max-w-4xl mx-auto mb-16 pt-6 md:pt-10 flex flex-col justify-center animate-fade-in-up min-h-[400px]">
                     
@@ -1032,7 +1028,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
                     </div>
 
                     {/* Functional Input Box - Estilo Console */}
-                    <div className="w-full bg-white dark:bg-[#0a0a0a] rounded-[1.5rem] p-6 mb-8 min-h-[160px] flex flex-col justify-between hover:bg-gray-50 dark:hover:bg-[#111] transition-all duration-300 border border-gray-200 dark:border-white/10 shadow-xl dark:shadow-none relative overflow-hidden group focus-within:border-blue-500/50 z-20">
+                    <div className="w-full bg-white dark:bg-[#0a0a0a]/90 backdrop-blur-md rounded-[1.5rem] p-6 mb-8 min-h-[160px] flex flex-col justify-between hover:bg-gray-50 dark:hover:bg-[#111] transition-all duration-300 border border-gray-200 dark:border-white/10 shadow-xl dark:shadow-none relative overflow-hidden group focus-within:border-blue-500/50 z-20">
                         
                         <div className="mt-2 w-full relative">
                             {/* PREVIEW DE IMAGEM ANEXADA */}
@@ -1149,7 +1145,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
                     <div className="flex gap-3 overflow-x-auto w-full pb-4 no-scrollbar">
                         <button 
                             onClick={() => { setPrompt("Escreva um Ebook curto, minimalista e sofisticado sobre o tema: "); document.querySelector('textarea')?.focus(); }}
-                            className="flex items-center gap-3 px-5 py-3 rounded-xl bg-white dark:bg-[#0a0a0a] hover:bg-gray-100 dark:hover:bg-white/10 transition-all whitespace-nowrap min-w-max border border-gray-200 dark:border-white/10 shadow-sm hover:border-orange-500/30 group"
+                            className="flex items-center gap-3 px-5 py-3 rounded-xl bg-white dark:bg-[#0a0a0a]/80 backdrop-blur-md hover:bg-gray-100 dark:hover:bg-white/10 transition-all whitespace-nowrap min-w-max border border-gray-200 dark:border-white/10 shadow-sm hover:border-orange-500/30 group"
                         >
                             <div className="w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-500/10 flex items-center justify-center group-hover:bg-orange-500/20 transition-colors">
                                 <i className="fas fa-book-open text-orange-600 dark:text-orange-400"></i>
@@ -1159,7 +1155,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
 
                         <button 
                             onClick={() => { setPrompt("Aja como uma Contadora Expert. Explique de forma clara, direta e sem burocracia: "); document.querySelector('textarea')?.focus(); }}
-                            className="flex items-center gap-3 px-5 py-3 rounded-xl bg-white dark:bg-[#0a0a0a] hover:bg-gray-100 dark:hover:bg-white/10 transition-all whitespace-nowrap min-w-max border border-gray-200 dark:border-white/10 shadow-sm hover:border-teal-500/30 group"
+                            className="flex items-center gap-3 px-5 py-3 rounded-xl bg-white dark:bg-[#0a0a0a]/80 backdrop-blur-md hover:bg-gray-100 dark:hover:bg-white/10 transition-all whitespace-nowrap min-w-max border border-gray-200 dark:border-white/10 shadow-sm hover:border-teal-500/30 group"
                         >
                             <div className="w-8 h-8 rounded-lg bg-teal-100 dark:bg-teal-500/10 flex items-center justify-center group-hover:bg-teal-500/20 transition-colors">
                                 <i className="fas fa-calculator text-teal-600 dark:text-teal-400"></i>
@@ -1169,7 +1165,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
 
                         <button 
                             onClick={() => { setPrompt("Crie uma imagem de "); document.querySelector('textarea')?.focus(); }}
-                            className="flex items-center gap-3 px-5 py-3 rounded-xl bg-white dark:bg-[#0a0a0a] hover:bg-gray-100 dark:hover:bg-white/10 transition-all whitespace-nowrap min-w-max border border-gray-200 dark:border-white/10 shadow-sm hover:border-yellow-500/30 group"
+                            className="flex items-center gap-3 px-5 py-3 rounded-xl bg-white dark:bg-[#0a0a0a]/80 backdrop-blur-md hover:bg-gray-100 dark:hover:bg-white/10 transition-all whitespace-nowrap min-w-max border border-gray-200 dark:border-white/10 shadow-sm hover:border-yellow-500/30 group"
                         >
                             <div className="w-8 h-8 rounded-lg bg-yellow-100 dark:bg-yellow-500/10 flex items-center justify-center group-hover:bg-yellow-500/20 transition-colors">
                                 <i className="fas fa-image text-yellow-600 dark:text-yellow-400"></i>
@@ -1179,7 +1175,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
 
                         <button 
                             onClick={() => { setPrompt("Gere um video de "); document.querySelector('textarea')?.focus(); }}
-                            className="flex items-center gap-3 px-5 py-3 rounded-xl bg-white dark:bg-[#0a0a0a] hover:bg-gray-100 dark:hover:bg-white/10 transition-all whitespace-nowrap min-w-max border border-gray-200 dark:border-white/10 shadow-sm hover:border-green-500/30 group"
+                            className="flex items-center gap-3 px-5 py-3 rounded-xl bg-white dark:bg-[#0a0a0a]/80 backdrop-blur-md hover:bg-gray-100 dark:hover:bg-white/10 transition-all whitespace-nowrap min-w-max border border-gray-200 dark:border-white/10 shadow-sm hover:border-green-500/30 group"
                         >
                              <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-500/10 flex items-center justify-center group-hover:bg-green-500/20 transition-colors">
                                 <i className="fas fa-play text-green-600 dark:text-green-400"></i>
@@ -1189,7 +1185,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
 
                         <button 
                             onClick={() => setActiveTab('estudos')}
-                            className="flex items-center gap-3 px-5 py-3 rounded-xl bg-white dark:bg-[#0a0a0a] hover:bg-gray-100 dark:hover:bg-white/10 transition-all whitespace-nowrap min-w-max border border-gray-200 dark:border-white/10 shadow-sm hover:border-red-500/30 group"
+                            className="flex items-center gap-3 px-5 py-3 rounded-xl bg-white dark:bg-[#0a0a0a]/80 backdrop-blur-md hover:bg-gray-100 dark:hover:bg-white/10 transition-all whitespace-nowrap min-w-max border border-gray-200 dark:border-white/10 shadow-sm hover:border-red-500/30 group"
                         >
                              <div className="w-8 h-8 rounded-lg bg-red-100 dark:bg-red-500/10 flex items-center justify-center group-hover:bg-red-500/20 transition-colors">
                                 <i className="fas fa-graduation-cap text-red-500 dark:text-red-400"></i>
@@ -1199,7 +1195,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
                     </div>
 
                     {/* --- SHOWCASE SECTION --- */}
-                    <div className="mt-16 w-full animate-fade-in-up">
+                    <div className="mt-16 w-full animate-fade-in-up bg-white/50 dark:bg-black/40 backdrop-blur-md p-8 rounded-3xl border border-gray-200 dark:border-white/5">
                         
                         {/* CATEGORY: IMAGENS */}
                         <div className="mb-12">
