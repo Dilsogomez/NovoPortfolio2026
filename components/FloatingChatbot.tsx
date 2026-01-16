@@ -12,8 +12,8 @@ interface Message {
 // --- Componente de Efeito de Digitação ---
 const Typewriter = ({ text, speed = 20 }: { text: string; speed?: number }) => {
     const [displayedText, setDisplayedText] = useState('');
-    // Limpa o texto de caracteres markdown (**, *) antes de processar
-    const cleanText = text.replace(/\*\*/g, '').replace(/\*/g, '');
+    // Limpa o texto de caracteres markdown (**, *) e tags de ruído antes de processar
+    const cleanText = text.replace(/\*\*/g, '').replace(/\*/g, '').replace(/<noise>/gi, '');
 
     useEffect(() => {
         setDisplayedText(''); 
@@ -261,9 +261,13 @@ const FloatingChatbot: React.FC = () => {
                         if (outputTr) transcriptAccumulator.current.model += outputTr;
                         if (message.serverContent?.turnComplete) {
                              const userText = transcriptAccumulator.current.user;
-                             const modelText = transcriptAccumulator.current.model;
+                             let modelText = transcriptAccumulator.current.model;
+                             
+                             // Remove a tag <noise> do texto antes de salvar
+                             modelText = modelText.replace(/<noise>/gi, "").trim();
+
                              if (userText.trim()) setMessages(prev => [...prev, { id: Date.now(), text: userText, isUser: true }]);
-                             if (modelText.trim()) setMessages(prev => [...prev, { id: Date.now() + 1, text: modelText, isUser: false }]);
+                             if (modelText) setMessages(prev => [...prev, { id: Date.now() + 1, text: modelText, isUser: false }]);
                              transcriptAccumulator.current = { user: "", model: "" };
                         }
                     },

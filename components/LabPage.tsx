@@ -53,8 +53,8 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
 // --- Componente de Efeito de Digitação (Palavra por Palavra) ---
 const Typewriter = ({ text, onTyping }: { text: string, onTyping?: () => void }) => {
     const [displayedText, setDisplayedText] = useState('');
-    // Limpa o texto de caracteres markdown (**, *) antes de processar
-    const cleanText = text ? text.replace(/\*\*/g, '').replace(/\*/g, '') : '';
+    // Limpa o texto de caracteres markdown (**, *) e tags de ruído antes de processar
+    const cleanText = text ? text.replace(/\*\*/g, '').replace(/\*/g, '').replace(/<noise>/gi, '') : '';
     
     useEffect(() => {
         if (!cleanText) {
