@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenAI, LiveServerMessage, Modality } from "@google/genai";
-import { PROJECTS, TOOLS, COURSES, POSTS, RESULTS, LAB_IMAGES, LAB_STUDIES, LAB_VIDEOS, GEMINI_API_KEY } from '../constants';
+import { PROJECTS, TOOLS, COURSES, POSTS, RESULTS, LAB_IMAGES, LAB_STUDIES, LAB_VIDEOS } from '../constants';
 
 interface Message {
     id: number;
@@ -162,13 +162,11 @@ const FloatingChatbot: React.FC = () => {
 
     const startVoiceSession = async () => {
         if (isConnecting || connectionStatus === 'connected') return;
-
-        // Note: Key selection check removed because key is hardcoded
         
         setIsConnecting(true);
 
         try {
-            const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             
             const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
             const audioCtx = new AudioContextClass({ sampleRate: 24000 }); 
@@ -180,7 +178,7 @@ const FloatingChatbot: React.FC = () => {
             mediaStreamRef.current = stream;
 
             const sessionPromise = ai.live.connect({
-                model: 'gemini-2.5-flash-native-audio-preview-09-2025',
+                model: 'gemini-2.5-flash-native-audio-preview-12-2025',
                 config: {
                     responseModalities: [Modality.AUDIO],
                     speechConfig: {
@@ -329,8 +327,6 @@ const FloatingChatbot: React.FC = () => {
         if (e) e.preventDefault();
         if (!input.trim()) return;
 
-        // Note: Key check removed
-
         const userText = input;
         const userMsg: Message = { id: Date.now(), text: userText, isUser: true };
         
@@ -339,7 +335,7 @@ const FloatingChatbot: React.FC = () => {
         setIsTyping(true);
 
         try {
-            const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             const history = messages.slice(-10).map(m => ({
                 role: m.isUser ? 'user' : 'model',
                 parts: [{ text: m.text }]
@@ -515,77 +511,41 @@ const FloatingChatbot: React.FC = () => {
                         </div>
 
                         {/* Input Area */}
-                        <form onSubmit={handleTextSend} className="p-3 bg-gray-900 border-t border-white/10 flex gap-2 shrink-0">
+                        <form onSubmit={handleTextSend} className="p-4 bg-gray-900 border-t border-white/10 flex gap-2">
                             <input 
                                 type="text" 
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
-                                placeholder="Pergunte sobre projetos ou planos..."
-                                className="flex-1 bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-base text-white focus:outline-none focus:border-blue-500/50 transition-colors placeholder-gray-500"
+                                placeholder="Digite sua mensagem..."
+                                className="flex-1 bg-gray-800 border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors placeholder-gray-500"
                             />
                             <button 
                                 type="submit" 
                                 disabled={!input.trim() || isTyping}
-                                className="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-blue-500/25"
+                                className="w-10 h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-lg shadow-blue-600/20"
                             >
-                                {isTyping ? (
-                                    <i className="fas fa-spinner fa-spin text-xs"></i>
-                                ) : (
-                                    <i className="fas fa-paper-plane text-xs"></i>
-                                )}
+                                {isTyping ? <i className="fas fa-spinner fa-spin text-xs"></i> : <i className="fas fa-paper-plane text-xs"></i>}
                             </button>
                         </form>
                     </>
                 )}
             </div>
 
-            {/* Speech Bubble Tooltip - Only show when closed */}
-            {!isOpen && (
-                <div className="absolute bottom-4 right-20 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-lg border border-gray-100 dark:border-white/10 whitespace-nowrap animate-bounce flex items-center">
-                    Fale com a Marta
-                    <div className="absolute top-1/2 -right-1 w-2 h-2 bg-white dark:bg-gray-800 border-t border-r border-gray-100 dark:border-white/10 transform -translate-y-1/2 rotate-45"></div>
-                </div>
-            )}
-
-            {/* Floating Button */}
-            <button 
+            {/* Toggle Button */}
+            <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`
-                    w-14 h-14 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/30 transition-all duration-300 hover:scale-110 z-50 relative overflow-hidden group
-                    ${isOpen ? 'bg-gray-800 text-white rotate-90' : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-purple-500/50'}
-                `}
+                className={`w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-2xl transition-all duration-300 hover:scale-110 z-[60] relative ${
+                    isOpen 
+                        ? 'bg-red-500 rotate-90 text-white' 
+                        : 'bg-gradient-to-tr from-blue-600 to-purple-600 text-white animate-pulse-slow hover:shadow-blue-500/50'
+                }`}
             >
-                <div className="absolute top-0 -left-[100%] w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 transition-all duration-1000 group-hover:left-[100%]"></div>
-                
                 {isOpen ? (
-                    <i className="fas fa-times text-xl relative z-10"></i>
+                    <i className="fas fa-times"></i>
                 ) : (
-                    <i className="fas fa-sparkles text-2xl animate-pulse relative z-10"></i>
+                    null
                 )}
             </button>
-            
-            <style>{`
-                @keyframes wave {
-                    0%, 100% { height: 4px; }
-                    50% { height: 24px; }
-                }
-                @keyframes wave-slow {
-                    0%, 100% { height: 4px; opacity: 0.5; }
-                    50% { height: 16px; opacity: 1; }
-                }
-                .animate-wave {
-                    animation: wave 1s ease-in-out infinite;
-                }
-                .animate-wave-slow {
-                    animation: wave-slow 2s ease-in-out infinite;
-                }
-                .animate-ping-slow {
-                    animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
-                }
-                .animate-ping-slower {
-                    animation: ping 3s cubic-bezier(0, 0, 0.2, 1) infinite;
-                }
-            `}</style>
         </div>
     );
 };

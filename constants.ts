@@ -2,9 +2,8 @@
 import { Project, Tool, Metric, NavItem, SocialLink, ResultItem, Course, BlogPost, LabImage, LabStudy, LabVideo } from './types';
 
 // --- SECURITY CONFIGURATION ---
-// ATENÇÃO: Configure restrições de HTTP Referrer no Google Cloud Console para proteger esta chave.
-// Permita apenas o domínio do seu site (ex: seusite.com e localhost).
-export const GEMINI_API_KEY = 'AIzaSyDf-6k3m1ORpoHaCS3s2qmQ81w8RQ9sSOM';
+// A chave de API agora é obtida exclusivamente via variável de ambiente process.env.API_KEY
+// para garantir a segurança e não expor credenciais no código-fonte.
 
 export const NAV_ITEMS: NavItem[] = [
     { label: 'Serviços', href: '#ferramentas' },

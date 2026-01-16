@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { GoogleGenAI, LiveServerMessage, Modality } from "@google/genai";
-import { PROJECTS, TOOLS, COURSES, POSTS, RESULTS, LAB_IMAGES, LAB_STUDIES, LAB_VIDEOS, GEMINI_API_KEY } from '../constants';
+import { PROJECTS, TOOLS, COURSES, POSTS, RESULTS, LAB_IMAGES, LAB_STUDIES, LAB_VIDEOS } from '../constants';
 import { BlogPost } from '../types';
 import NeuralBackground from './NeuralBackground';
 
@@ -335,7 +335,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
             setLiveTranscript("");
             transcriptAccumulator.current.user = "";
             
-            const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             
             const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
             const audioCtx = new AudioContextClass({ sampleRate: 24000 });
@@ -347,7 +347,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
             mediaStreamRef.current = stream;
 
             const sessionPromise = ai.live.connect({
-                model: 'gemini-2.5-flash-native-audio-preview-09-2025',
+                model: 'gemini-2.5-flash-native-audio-preview-12-2025',
                 config: {
                     responseModalities: [Modality.AUDIO],
                     speechConfig: {
@@ -430,7 +430,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
                              transcriptAccumulator.current.user += inputTr;
                              setLiveTranscript(prev => {
                                  const newText = prev + inputTr;
-                                 return newText.slice(-100); // Keep only last 100 chars
+                                 return newText.slice(-150); // Keep text manageable
                              });
                         }
                     },
@@ -700,7 +700,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
         // Mantém o foco no textarea após envio
         if(textareaRef.current) textareaRef.current.focus();
 
-        const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
         const lowerPrompt = currentPrompt.toLowerCase();
         
         const videoKeywords = ['video', 'vídeo', 'filme', 'movie', 'clip', 'animação', 'animation'];
@@ -725,7 +725,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
 
                 const videoUri = operation.response?.generatedVideos?.[0]?.video?.uri;
                 if (videoUri) {
-                    const videoUrlWithKey = `${videoUri}&key=${GEMINI_API_KEY}`;
+                    const videoUrlWithKey = `${videoUri}&key=${process.env.API_KEY}`;
                     setMessages(prev => [...prev, {
                         id: Date.now().toString(),
                         role: 'model',
@@ -854,6 +854,16 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
 
     return (
         <>
+            <style>{`
+                @keyframes float-ghost {
+                    0%, 100% { transform: translateY(0px); }
+                    50% { transform: translateY(-10px); }
+                }
+                .animate-float-ghost {
+                    animation: float-ghost 3s ease-in-out infinite;
+                }
+            `}</style>
+
             {theme === 'dark' && <NeuralBackground />}
              {/* Header Section for Lab: Logo & Theme Toggle (Absolute) */}
              <div className="absolute top-0 left-0 right-0 p-6 z-50 flex justify-between items-center pointer-events-none">
@@ -1329,83 +1339,77 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
                 </div>
             </section>
             
-            {/* --- MINI MODAL DE VOZ (MARTA LIVE - MODO FLUTUANTE) --- */}
+            {/* --- MARTA GHOST ORB UI (MODO FLUTUANTE) --- */}
             {showVoiceMode && (
-                <div className="fixed bottom-6 right-6 z-[60] w-[320px] bg-gray-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden transition-all duration-300 animate-fade-in-up origin-bottom-right ring-1 ring-white/10">
+                <div className="fixed bottom-8 right-8 z-[70] flex flex-col items-end pointer-events-none">
                     
-                    {/* Header */}
-                    <div className="flex justify-between items-center p-4 bg-gradient-to-r from-blue-900/20 to-purple-900/20 border-b border-white/5">
-                        <div className="flex items-center gap-2">
-                            <span className={`w-2 h-2 rounded-full ${connectionStatus === 'connected' || connectionStatus === 'listening' || connectionStatus === 'speaking' ? 'bg-green-500' : 'bg-red-500'} animate-pulse`}></span>
-                            <span className="text-xs font-bold text-white tracking-widest uppercase">Marta Live</span>
+                    {/* Transcript Floating Bubble */}
+                    {liveTranscript && (
+                        <div className="mb-6 mr-4 max-w-[220px] bg-black/70 backdrop-blur-md border border-white/20 p-4 rounded-2xl rounded-br-none text-xs font-light text-white leading-relaxed shadow-lg animate-fade-in-up pointer-events-auto relative">
+                            {liveTranscript}
+                            <div className="absolute -bottom-2 right-0 w-4 h-4 bg-black/70 border-r border-b border-white/20 transform rotate-45"></div>
                         </div>
-                        <button 
-                            onClick={() => { setShowVoiceMode(false); setIsVoiceActive(false); disconnectLiveSession(); }} 
-                            className="text-gray-400 hover:text-white transition-colors"
-                        >
-                            <i className="fas fa-times"></i>
-                        </button>
-                    </div>
+                    )}
 
-                    {/* Main Visualizer Area */}
-                    <div className="flex-1 h-64 flex flex-col items-center justify-center relative bg-black/40">
+                    {/* The Ghost Orb Container */}
+                    <div className="relative group pointer-events-auto">
                         
-                        {/* Mini Orb Animation */}
-                        <div className="relative mb-4">
-                            <div className={`w-32 h-32 rounded-full blur-2xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-1000 ${
-                                connectionStatus === 'speaking' ? 'bg-blue-500 opacity-40 scale-110' : 
-                                connectionStatus === 'listening' ? 'bg-purple-500 opacity-30 scale-100' : 
-                                'bg-gray-500 opacity-10 scale-90'
+                        {/* THE ORB */}
+                        <div className={`relative w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center transition-all duration-500 animate-float-ghost ${
+                            connectionStatus === 'speaking' ? 'scale-110' : 'scale-100'
+                        }`}>
+                            {/* Outer Glow / Aura */}
+                            <div className={`absolute inset-0 rounded-full blur-xl transition-colors duration-500 ${
+                                connectionStatus === 'speaking' ? 'bg-blue-500 opacity-60' :
+                                connectionStatus === 'listening' ? 'bg-green-500 opacity-40' :
+                                'bg-gray-500 opacity-20'
                             }`}></div>
 
-                            <div className={`w-20 h-20 rounded-full border border-white/10 flex items-center justify-center relative backdrop-blur-sm transition-all duration-500 ${
-                                connectionStatus === 'speaking' ? 'scale-110 border-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.3)]' :
-                                connectionStatus === 'listening' ? 'scale-100 border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.2)]' :
-                                'scale-95 border-white/5'
+                            {/* Core Sphere */}
+                            <div className={`absolute inset-2 rounded-full border-2 bg-gradient-to-br backdrop-blur-md shadow-inner transition-all duration-500 overflow-hidden ${
+                                connectionStatus === 'speaking' ? 'from-blue-600 to-cyan-400 border-blue-300 shadow-[0_0_30px_rgba(59,130,246,0.6)]' :
+                                connectionStatus === 'listening' ? 'from-green-600 to-emerald-400 border-green-300 shadow-[0_0_20px_rgba(16,185,129,0.4)]' :
+                                'from-gray-800 to-black border-white/20'
                             }`}>
-                                <i className={`fas fa-sparkles text-3xl transition-all duration-300 ${
-                                    connectionStatus === 'speaking' ? 'text-blue-400 animate-pulse scale-110' : 
-                                    connectionStatus === 'listening' ? 'text-purple-400' : 
-                                    'text-white/20'
-                                }`}></i>
+                                {/* Inner Fluid Animation (CSS) */}
+                                <div className={`absolute inset-0 opacity-50 ${
+                                    connectionStatus === 'speaking' ? 'bg-blue-300 mix-blend-overlay animate-pulse' : 
+                                    connectionStatus === 'listening' ? 'bg-green-300 mix-blend-overlay animate-pulse' : 
+                                    'hidden'
+                                }`}></div>
                             </div>
+
+                            {/* Expanding Rings (Sonar Effect) */}
+                            {connectionStatus === 'speaking' && (
+                                <>
+                                    <div className="absolute inset-0 rounded-full border border-blue-400/50 animate-ping opacity-75"></div>
+                                    <div className="absolute inset-0 rounded-full border border-cyan-400/30 animate-ping delay-100 opacity-50"></div>
+                                </>
+                            )}
+                            {connectionStatus === 'listening' && (
+                                <div className="absolute inset-0 rounded-full border border-green-400/30 animate-pulse opacity-50"></div>
+                            )}
                         </div>
 
-                        {/* Live Transcriptions (Mini) */}
-                        <div className="w-full px-6 text-center">
-                             <p className="text-sm font-light text-white/90 leading-relaxed min-h-[40px] line-clamp-2">
-                                {liveTranscript || (connectionStatus === 'speaking' ? "Falando..." : "Ouvindo...")}
-                             </p>
+                        {/* Orbiting Controls (Show on Hover or Always small) */}
+                        <div className="absolute -left-12 bottom-0 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-x-4 group-hover:translate-x-0">
+                            <button 
+                                onClick={toggleMute}
+                                className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg border backdrop-blur-md transition-all hover:scale-110 ${isMuted ? 'bg-red-500/80 border-red-400 text-white' : 'bg-black/60 border-white/20 text-white hover:bg-white/20'}`}
+                                title={isMuted ? "Ativar som" : "Mutar"}
+                            >
+                                <i className={`fas ${isMuted ? 'fa-microphone-slash' : 'fa-microphone'} text-xs`}></i>
+                            </button>
+
+                            <button 
+                                onClick={() => { setShowVoiceMode(false); setIsVoiceActive(false); disconnectLiveSession(); }}
+                                className="w-10 h-10 rounded-full bg-black/60 border border-white/20 text-red-400 flex items-center justify-center shadow-lg backdrop-blur-md transition-all hover:bg-red-500 hover:text-white hover:border-red-500 hover:scale-110"
+                                title="Encerrar"
+                            >
+                                <i className="fas fa-phone-slash text-xs"></i>
+                            </button>
                         </div>
                     </div>
-
-                    {/* Bottom Controls */}
-                    <div className="p-4 flex justify-center items-center gap-6 border-t border-white/5 bg-black/20">
-                        <button 
-                            onClick={toggleMute}
-                            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${isMuted ? 'bg-white text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
-                            title={isMuted ? "Ativar microfone" : "Silenciar"}
-                        >
-                            <i className={`fas ${isMuted ? 'fa-microphone-slash' : 'fa-microphone'} text-sm`}></i>
-                        </button>
-
-                        <button 
-                            onClick={() => { setShowVoiceMode(false); setIsVoiceActive(false); disconnectLiveSession(); }}
-                            className="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center hover:bg-red-600 hover:scale-105 transition-all shadow-lg shadow-red-500/30"
-                            title="Encerrar"
-                        >
-                            <i className="fas fa-phone-slash text-lg text-white"></i>
-                        </button>
-
-                        <button 
-                            onClick={() => { setIsCameraOn(!isCameraOn); alert("Câmera simulada (apenas UI)"); }}
-                            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${isCameraOn ? 'bg-white text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
-                            title="Alternar câmera"
-                        >
-                            <i className={`fas ${isCameraOn ? 'fa-video' : 'fa-video-slash'} text-sm`}></i>
-                        </button>
-                    </div>
-
                 </div>
             )}
         </>

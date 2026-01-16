@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenAI, LiveServerMessage, Modality } from "@google/genai";
-import { PROJECTS, TOOLS, COURSES, POSTS, RESULTS, LAB_IMAGES, LAB_STUDIES, LAB_VIDEOS, GEMINI_API_KEY } from '../constants';
+import { PROJECTS, TOOLS, COURSES, POSTS, RESULTS, LAB_IMAGES, LAB_STUDIES, LAB_VIDEOS } from '../constants';
 
 interface Message {
     id: number;
@@ -206,7 +206,7 @@ const StudioAIPage: React.FC = () => {
 
     const handleKeySelection = async () => {
         // Verifica se há chave de API disponível no ambiente ou se é necessário solicitar
-        if (!GEMINI_API_KEY && !process.env.API_KEY && (window as any).aistudio?.openSelectKey) {
+        if (!process.env.API_KEY && (window as any).aistudio?.openSelectKey) {
              const selected = await (window as any).aistudio.openSelectKey();
              return selected;
         }
@@ -225,7 +225,7 @@ const StudioAIPage: React.FC = () => {
         setIsConnecting(true);
 
         try {
-            const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY || process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             
             const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
             const audioCtx = new AudioContextClass({ sampleRate: 24000 });
@@ -237,7 +237,7 @@ const StudioAIPage: React.FC = () => {
             mediaStreamRef.current = stream;
 
             const sessionPromise = ai.live.connect({
-                model: 'gemini-2.5-flash-native-audio-preview-09-2025',
+                model: 'gemini-2.5-flash-native-audio-preview-12-2025',
                 config: {
                     responseModalities: [Modality.AUDIO],
                     speechConfig: {
@@ -386,7 +386,7 @@ const StudioAIPage: React.FC = () => {
         setIsTyping(true);
 
         try {
-            const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY || process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             const history = messages.slice(-10).map(m => ({
                 role: m.isUser ? 'user' : 'model',
                 parts: [{ text: m.text }]
@@ -426,8 +426,7 @@ const StudioAIPage: React.FC = () => {
         setGeneratedImage(null);
 
         try {
-            // Usando GEMINI_API_KEY se process.env não estiver disponível
-            const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY || process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             const response = await ai.models.generateImages({
                 model: 'imagen-4.0-generate-001',
                 prompt: imagePrompt,
