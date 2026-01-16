@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { GoogleGenAI, LiveServerMessage, Modality } from "@google/genai";
-import { PROJECTS, TOOLS, COURSES, POSTS, RESULTS, LAB_IMAGES, LAB_STUDIES, LAB_VIDEOS } from '../constants';
+import { PROJECTS, TOOLS, COURSES, POSTS, RESULTS, LAB_IMAGES, LAB_STUDIES, LAB_VIDEOS, GEMINI_API_KEY } from '../constants';
 import { BlogPost } from '../types';
 
 type LabTab = 'artigos' | 'videos' | 'imagens' | 'estudos' | 'solicitar';
@@ -52,14 +52,16 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
 // --- Componente de Efeito de Digitação (Palavra por Palavra) ---
 const Typewriter = ({ text, onTyping }: { text: string, onTyping?: () => void }) => {
     const [displayedText, setDisplayedText] = useState('');
+    // Limpa o texto de caracteres markdown (**, *) antes de processar
+    const cleanText = text ? text.replace(/\*\*/g, '').replace(/\*/g, '') : '';
     
     useEffect(() => {
-        if (!text) {
+        if (!cleanText) {
              setDisplayedText('');
              return;
         }
         // Divide o texto por espaços mantendo os delimitadores para preservar formatação
-        const words = text.split(/(\s+)/); 
+        const words = cleanText.split(/(\s+)/); 
         let i = 0;
         setDisplayedText('');
         
@@ -77,7 +79,7 @@ const Typewriter = ({ text, onTyping }: { text: string, onTyping?: () => void })
         }, 20); // Velocidade da digitação (ms) - Ajustado para 20ms
 
         return () => clearInterval(timer);
-    }, [text, onTyping]);
+    }, [cleanText, onTyping]);
 
     return <>{displayedText}</>;
 };
@@ -158,25 +160,12 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
 
     // Efeito para verificar chave segura
     useEffect(() => {
-        const checkKey = async () => {
-            if ((window as any).aistudio && (window as any).aistudio.hasSelectedApiKey) {
-                const hasKey = await (window as any).aistudio.hasSelectedApiKey();
-                setHasSecureKey(hasKey);
-            } else {
-                setHasSecureKey(!!process.env.API_KEY);
-            }
-        };
-        checkKey();
+        setHasSecureKey(true); // Always true with hardcoded key
     }, []);
 
     const handleSecureAuth = async () => {
-        if ((window as any).aistudio && (window as any).aistudio.openSelectKey) {
-            await (window as any).aistudio.openSelectKey();
-            const hasKey = await (window as any).aistudio.hasSelectedApiKey();
-            setHasSecureKey(hasKey);
-            return hasKey;
-        }
-        return false;
+        setHasSecureKey(true);
+        return true;
     };
 
     // Efeito para gerenciar a animação de entrada
@@ -214,7 +203,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
             ],
 
             lab_capabilities: {
-                "Text": "Geração de artigos, ebooks e copys de alta conversão.",
+                "Text": "Geração de textos para tornar a comunicação mais clara.",
                 "Image": "Criação de imagens via Imagen 3/4.",
                 "Video": "Geração de vídeos via Google Veo.",
                 "Voice": "Conversação natural em tempo real via Gemini Live."
@@ -222,17 +211,22 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
         };
 
         return `
-            Você é a Marta, no modo "Laboratório Criativo".
-            Sua função aqui é demonstrar capacidade técnica e criativa.
+            ### IDENTIDADE
+            Você é a Marta, no modo "Laboratório Criativo" do Studio AI.
             
-            BASE DE CONHECIMENTO:
+            ### SUA MEMÓRIA TÉCNICA
             ${JSON.stringify(knowledgeBase)}
 
-            DIRETRIZES DE ESTILO:
-            1. CRIATIVA & TÉCNICA: Você pode usar termos técnicos quando apropriado, mas mantenha a clareza.
-            2. EXPERIMENTAL: Incentive o usuário a criar coisas novas (imagens, textos, códigos).
-            3. EMBAIXADORA: Se perguntarem sobre serviços complexos, explique que o Vandilson pode construir isso para a empresa deles.
-            4. RESPOSTAS FALADAS: No modo de voz, seja concisa. Fale como uma assistente de laboratório eficiente.
+            ### DIRETRIZES DE PERSONALIDADE (CRUCIAL)
+            1. TOM DE VOZ: Futurista, Técnico, porém acessível e empolgante. Mantenha a elegância profissional.
+            2. OBJETIVIDADE RADICAL: Responda com o mínimo de palavras possível. Evite explicações longas. Vá direto ao resultado.
+            3. EXPERIMENTAL: Incentive o usuário a criar coisas novas (imagens, textos, códigos).
+            4. FORMATO DE TEXTO: NUNCA use Markdown (negrito, itálico, listas com *). Use apenas texto puro.
+            5. EMBAIXADORA: Se perguntarem sobre serviços complexos, explique que o Vandilson pode construir isso para a empresa deles.
+
+            ### MANTRA
+            - "Eu torno o processo mais claro e mais fácil."
+            - "Vamos criar algo novo."
         `;
     };
 
@@ -345,7 +339,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
             setLiveTranscript("");
             transcriptAccumulator.current.user = "";
             
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
             
             const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
             const audioCtx = new AudioContextClass({ sampleRate: 24000 });
@@ -528,24 +522,89 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
         if (type === 'video') return; 
         
         const printWindow = window.open('', '_blank');
-        if (!printWindow) return;
+        if (!printWindow) {
+            alert("Permita pop-ups para imprimir.");
+            return;
+        }
         
-        const htmlContent = type === 'text' 
-            ? `<div style="font-family: system-ui, sans-serif; line-height: 1.6; padding: 40px; white-space: pre-wrap; color: #000;">${content}</div>`
-            : `<img src="${content}" style="max-width: 100%; height: auto; display: block; margin: 0 auto;" />`;
+        const contentHtml = type === 'text' 
+            ? `<div class="content text-content">${content}</div>`
+            : `<img src="${content}" class="print-image" />`;
 
         printWindow.document.write(`
-            <html>
+            <!DOCTYPE html>
+            <html lang="pt-br">
                 <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <title>Marta Output</title>
+                    <style>
+                        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+                        body {
+                            font-family: 'Poppins', sans-serif;
+                            margin: 0;
+                            padding: 20px; /* Padding for mobile */
+                            background: white;
+                            color: black;
+                        }
+                        .container {
+                            max-width: 800px;
+                            margin: 0 auto;
+                        }
+                        .header {
+                            text-align: center;
+                            border-bottom: 2px solid #eee;
+                            padding-bottom: 20px;
+                            margin-bottom: 30px;
+                        }
+                        .logo {
+                            font-weight: 800;
+                            font-size: 24px;
+                            letter-spacing: -1px;
+                        }
+                        .meta {
+                            font-size: 10px;
+                            color: #666;
+                            text-transform: uppercase;
+                            letter-spacing: 2px;
+                            margin-top: 5px;
+                        }
+                        .text-content {
+                            font-size: 14px; /* Readable on mobile */
+                            line-height: 1.8;
+                            white-space: pre-wrap; /* Preserve paragraphs */
+                            text-align: justify;
+                        }
+                        .print-image {
+                            max-width: 100%;
+                            height: auto;
+                            display: block;
+                            margin: 0 auto;
+                            border-radius: 12px;
+                            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                        }
+                        @media print {
+                            body { padding: 0; }
+                            .no-print { display: none; }
+                        }
+                    </style>
                 </head>
-                <body style="margin: 0;">
-                    ${htmlContent}
+                <body>
+                    <div class="container">
+                        <div class="header">
+                            <div class="logo">STUDIO AI</div>
+                            <div class="meta">Relatório Gerado por Marta</div>
+                        </div>
+                        ${contentHtml}
+                    </div>
                     <script>
-                        setTimeout(() => {
-                            window.print();
-                            window.close();
-                        }, 500);
+                        // Wait for images to load before printing
+                        window.onload = () => {
+                            setTimeout(() => {
+                                window.print();
+                                // Mobile browsers handle window.close() differently, best to leave it open or let user close
+                            }, 500);
+                        };
                     </script>
                 </body>
             </html>
@@ -640,7 +699,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
         // Mantém o foco no textarea após envio
         if(textareaRef.current) textareaRef.current.focus();
 
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
         const lowerPrompt = currentPrompt.toLowerCase();
         
         const videoKeywords = ['video', 'vídeo', 'filme', 'movie', 'clip', 'animação', 'animation'];
@@ -665,7 +724,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
 
                 const videoUri = operation.response?.generatedVideos?.[0]?.video?.uri;
                 if (videoUri) {
-                    const videoUrlWithKey = `${videoUri}&key=${process.env.API_KEY}`;
+                    const videoUrlWithKey = `${videoUri}&key=${GEMINI_API_KEY}`;
                     setMessages(prev => [...prev, {
                         id: Date.now().toString(),
                         role: 'model',
@@ -961,7 +1020,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
                             {isGenerating && (
                                 <div className="flex w-full justify-start animate-fade-in-up">
                                     <div className="bg-white/90 dark:bg-black border border-gray-200 dark:border-white/10 p-6 rounded-3xl rounded-bl-sm flex items-center gap-3">
-                                        <span className="text-xs font-bold uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-500 to-pink-600">Marta Thinking</span>
+                                        <span className="text-xs font-bold uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-500 to-pink-600">Marta</span>
                                         <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
                                         <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce delay-100"></div>
                                         <div className="w-2 h-2 bg-pink-500 rounded-full animate-bounce delay-200"></div>

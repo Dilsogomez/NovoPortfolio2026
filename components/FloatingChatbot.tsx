@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenAI, LiveServerMessage, Modality } from "@google/genai";
-import { PROJECTS, TOOLS, COURSES, POSTS, RESULTS, LAB_IMAGES, LAB_STUDIES, LAB_VIDEOS } from '../constants';
+import { PROJECTS, TOOLS, COURSES, POSTS, RESULTS, LAB_IMAGES, LAB_STUDIES, LAB_VIDEOS, GEMINI_API_KEY } from '../constants';
 
 interface Message {
     id: number;
@@ -9,18 +9,19 @@ interface Message {
     isUser: boolean;
 }
 
-// --- Componente de Efeito de Digitação (Corrigido) ---
+// --- Componente de Efeito de Digitação ---
 const Typewriter = ({ text, speed = 20 }: { text: string; speed?: number }) => {
     const [displayedText, setDisplayedText] = useState('');
+    // Limpa o texto de caracteres markdown (**, *) antes de processar
+    const cleanText = text.replace(/\*\*/g, '').replace(/\*/g, '');
 
     useEffect(() => {
         setDisplayedText(''); 
         let i = 0;
         
         const timer = setInterval(() => {
-            if (i < text.length) {
-                // Usar slice garante que pegamos a string exata até o índice, evitando duplicações
-                setDisplayedText(text.slice(0, i + 1));
+            if (i < cleanText.length) {
+                setDisplayedText(cleanText.slice(0, i + 1));
                 i++;
             } else {
                 clearInterval(timer);
@@ -28,7 +29,7 @@ const Typewriter = ({ text, speed = 20 }: { text: string; speed?: number }) => {
         }, speed);
 
         return () => clearInterval(timer);
-    }, [text, speed]);
+    }, [cleanText, speed]);
 
     return <span>{displayedText}</span>;
 };
@@ -119,7 +120,7 @@ const FloatingChatbot: React.FC = () => {
             
             // CONTEÚDO DINÂMICO DOS CONSTANTS (Resumo)
             portfolio: {
-                "Marta AI": "IA de Vendas e Atendimento.",
+                "Marta AI": "IA para tornar vendas e atendimento mais claros e fáceis.",
                 "BOLHA": "CRM de Dados.",
                 "SpaceArte": "App para artistas.",
                 "SEES": "Soluções Digitais."
@@ -134,7 +135,7 @@ const FloatingChatbot: React.FC = () => {
         };
 
         return `
-            Você é a Marta, a IA Concierge do site do Vandilson Gomes.
+            Você é a Marta, a Inteligência Artificial Especialista do site do Vandilson Gomes.
             
             BASE DE DADOS:
             ${JSON.stringify(fullSiteKnowledge)}
@@ -144,6 +145,12 @@ const FloatingChatbot: React.FC = () => {
             2. GUIA: Se perguntarem onde encontrar algo, diga exatamente onde clicar.
             3. VENDAS: Se demonstrarem interesse, fale dos planos Nexus/Synapse e sugira contato via WhatsApp.
             4. PERSONALIDADE: Útil, tecnológica e eficiente.
+            5. FORMATAÇÃO: NÃO USE MARKDOWN. Não use negrito (**), itálico ou símbolos especiais. Apenas texto puro.
+            
+            IMPORTANTE:
+            - NUNCA diga que automatiza ou substitui vendas/atendimento.
+            - Diga SEMPRE que você ajuda a deixar o processo mais claro e mais fácil.
+            - Responda sempre com o MÍNIMO de palavras possível.
         `;
     };
 
@@ -152,21 +159,12 @@ const FloatingChatbot: React.FC = () => {
     const startVoiceSession = async () => {
         if (isConnecting || connectionStatus === 'connected') return;
 
-        // Security Check: Ensure API Key is selected
-        if ((window as any).aistudio && (window as any).aistudio.hasSelectedApiKey) {
-            const hasKey = await (window as any).aistudio.hasSelectedApiKey();
-            if (!hasKey) {
-                try {
-                     await (window as any).aistudio.openSelectKey();
-                     if (!(await (window as any).aistudio.hasSelectedApiKey())) return;
-                } catch (e) { console.error("Key selection failed", e); return; }
-            }
-        }
-
+        // Note: Key selection check removed because key is hardcoded
+        
         setIsConnecting(true);
 
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
             
             const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
             const audioCtx = new AudioContextClass({ sampleRate: 24000 }); 
@@ -322,16 +320,7 @@ const FloatingChatbot: React.FC = () => {
         if (e) e.preventDefault();
         if (!input.trim()) return;
 
-         // Security Check: Ensure API Key is selected
-         if ((window as any).aistudio && (window as any).aistudio.hasSelectedApiKey) {
-            const hasKey = await (window as any).aistudio.hasSelectedApiKey();
-            if (!hasKey) {
-                try {
-                     await (window as any).aistudio.openSelectKey();
-                     if (!(await (window as any).aistudio.hasSelectedApiKey())) return;
-                } catch (e) { console.error("Key selection failed", e); return; }
-            }
-        }
+        // Note: Key check removed
 
         const userText = input;
         const userMsg: Message = { id: Date.now(), text: userText, isUser: true };
@@ -341,7 +330,7 @@ const FloatingChatbot: React.FC = () => {
         setIsTyping(true);
 
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
             const history = messages.slice(-10).map(m => ({
                 role: m.isUser ? 'user' : 'model',
                 parts: [{ text: m.text }]
@@ -361,9 +350,10 @@ const FloatingChatbot: React.FC = () => {
             const aiMsg: Message = { id: Date.now() + 1, text: aiResponseText, isUser: false };
             setMessages(prev => [...prev, aiMsg]);
 
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            setMessages(prev => [...prev, { id: Date.now(), text: "Erro ao conectar.", isUser: false }]);
+            const errorMessage = error.message || "Erro desconhecido.";
+            setMessages(prev => [...prev, { id: Date.now(), text: `Erro de conexão: ${errorMessage}`, isUser: false }]);
         } finally {
             setIsTyping(false);
         }
@@ -371,7 +361,6 @@ const FloatingChatbot: React.FC = () => {
 
     return (
         <div className="fixed bottom-6 right-6 z-[60] flex flex-col items-end pointer-events-auto">
-            
             {/* Chat Window */}
             <div 
                 className={`
@@ -379,6 +368,7 @@ const FloatingChatbot: React.FC = () => {
                     ${isOpen ? 'opacity-100 scale-100 translate-y-0 h-[500px]' : 'opacity-0 scale-90 translate-y-10 pointer-events-none h-0'}
                 `}
             >
+                {/* ... (Header and Content remain mostly the same, Typewriter updated internally) ... */}
                 {/* Header */}
                 <div className="bg-gradient-to-r from-blue-600 to-purple-800 p-4 flex items-center justify-between shrink-0 z-20 relative">
                     <div className="flex items-center gap-3">
@@ -523,7 +513,7 @@ const FloatingChatbot: React.FC = () => {
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 placeholder="Pergunte sobre projetos ou planos..."
-                                className="flex-1 bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500/50 transition-colors placeholder-gray-500"
+                                className="flex-1 bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-base text-white focus:outline-none focus:border-blue-500/50 transition-colors placeholder-gray-500"
                             />
                             <button 
                                 type="submit" 

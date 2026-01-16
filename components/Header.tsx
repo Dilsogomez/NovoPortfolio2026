@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { NAV_ITEMS } from '../constants';
 
 interface HeaderProps {
-    onNavigate?: (page: 'home' | 'projects' | 'courses' | 'blog' | 'brain-ai' | 'lab') => void;
-    currentPage?: 'home' | 'projects' | 'courses' | 'blog' | 'brain-ai' | 'lab';
+    onNavigate?: (page: 'home' | 'projects' | 'courses' | 'blog' | 'studio-ai' | 'lab') => void;
+    currentPage?: 'home' | 'projects' | 'courses' | 'blog' | 'studio-ai' | 'lab';
     theme?: 'dark' | 'light';
     toggleTheme?: () => void;
 }
@@ -80,8 +80,8 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage = 'home', theme
         if (onNavigate) onNavigate('home');
     };
 
-    const handleBrainAIClick = () => {
-        if (onNavigate) onNavigate('brain-ai');
+    const handleStudioAIClick = () => {
+        if (onNavigate) onNavigate('studio-ai');
     };
 
     const handleLabClick = () => {
@@ -169,17 +169,17 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage = 'home', theme
                         <span className="hidden xl:inline text-sm font-medium tracking-wide">Laboratório</span>
                     </button>
 
-                    {/* Studio AI Button (Renomeado) */}
+                    {/* Studio AI Button */}
                     <button
-                        onClick={handleBrainAIClick}
+                        onClick={handleStudioAIClick}
                         className={`flex items-center gap-2 px-2 md:px-3 py-1.5 rounded-full border transition-all duration-300 group ${
-                            currentPage === 'brain-ai' 
+                            currentPage === 'studio-ai' 
                                 ? 'bg-blue-600/10 border-blue-500 text-blue-600 dark:text-blue-400' 
                                 : 'bg-gray-100 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:bg-white hover:shadow-md dark:hover:bg-white/10 dark:hover:text-white'
                         }`}
                         title="Studio AI"
                     >
-                        <i className={`fas fa-wand-magic-sparkles text-sm ${currentPage === 'brain-ai' ? 'animate-pulse' : 'group-hover:text-blue-500 dark:group-hover:text-blue-400'}`}></i>
+                        <i className={`fas fa-wand-magic-sparkles text-sm ${currentPage === 'studio-ai' ? 'animate-pulse' : 'group-hover:text-blue-500 dark:group-hover:text-blue-400'}`}></i>
                         <span className="hidden xl:inline text-sm font-medium tracking-wide">
                             Studio AI
                         </span>
@@ -217,7 +217,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage = 'home', theme
                         </button>
                         
                         <button
-                            onClick={() => { setIsMenuOpen(false); handleBrainAIClick(); }}
+                            onClick={() => { setIsMenuOpen(false); handleStudioAIClick(); }}
                             className="flex items-center justify-center gap-3 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold active:scale-95 transition-transform shadow-lg shadow-blue-500/30"
                         >
                             <i className="fas fa-wand-magic-sparkles text-white"></i>

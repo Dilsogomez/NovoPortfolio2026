@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { SOCIAL_LINKS } from '../constants';
 import ParticleNetworkBackground from './ParticleNetworkBackground';
@@ -14,10 +15,6 @@ const Hero: React.FC = () => {
                 <h1 className="text-4xl md:text-7xl font-extrabold font-montserrat mb-6 text-gray-900 dark:text-white leading-tight drop-shadow-sm dark:drop-shadow-2xl transition-colors">
                     VANDILSON GOMES
                 </h1>
-                
-                <h2 className="text-xl md:text-3xl text-gray-700 dark:text-gray-300 mb-8 font-light tracking-wide transition-colors">
-                    Customer Experience <span className="text-blue-600 dark:text-blue-500 mx-2">|</span> Web Development
-                </h2>
                 
                 <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed transition-colors">
                     Transforme idéias em realidade.

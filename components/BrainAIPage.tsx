@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenAI, LiveServerMessage, Modality } from "@google/genai";
-import { PROJECTS, TOOLS, COURSES, POSTS, RESULTS, LAB_IMAGES, LAB_STUDIES, LAB_VIDEOS } from '../constants';
+import { PROJECTS, TOOLS, COURSES, POSTS, RESULTS, LAB_IMAGES, LAB_STUDIES, LAB_VIDEOS, GEMINI_API_KEY } from '../constants';
 
 interface Message {
     id: number;
@@ -9,18 +9,19 @@ interface Message {
     isUser: boolean;
 }
 
-// --- Componente de Efeito de Digitação (Corrigido) ---
+// --- Componente de Efeito de Digitação ---
 const Typewriter = ({ text, speed = 20 }: { text: string; speed?: number }) => {
     const [displayedText, setDisplayedText] = useState('');
+    // Limpa o texto de caracteres markdown (**, *) antes de processar
+    const cleanText = text.replace(/\*\*/g, '').replace(/\*/g, '');
 
     useEffect(() => {
         setDisplayedText(''); 
         let i = 0;
         
         const timer = setInterval(() => {
-            if (i < text.length) {
-                // Usar slice garante que pegamos a string exata até o índice, evitando duplicações
-                setDisplayedText(text.slice(0, i + 1));
+            if (i < cleanText.length) {
+                setDisplayedText(cleanText.slice(0, i + 1));
                 i++;
             } else {
                 clearInterval(timer);
@@ -28,7 +29,7 @@ const Typewriter = ({ text, speed = 20 }: { text: string; speed?: number }) => {
         }, speed);
 
         return () => clearInterval(timer);
-    }, [text, speed]);
+    }, [cleanText, speed]);
 
     return <span>{displayedText}</span>;
 };
@@ -63,7 +64,7 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
     return btoa(binary);
 }
 
-const BrainAIPage: React.FC = () => {
+const StudioAIPage: React.FC = () => {
     // UI State
     const [showIntro, setShowIntro] = useState(true);
     const [activeMode, setActiveMode] = useState<'voice' | 'chat' | 'image'>('voice');
@@ -72,7 +73,7 @@ const BrainAIPage: React.FC = () => {
     
     // Chat State
     const [messages, setMessages] = useState<Message[]>([
-        { id: 1, text: "Bem-vindo ao núcleo Marta. Inicie a conexão para processamento rápido e objetivo.", isUser: false }
+        { id: 1, text: "Marta online. Núcleo Studio AI ativo. Como posso tornar seus processos mais claros hoje?", isUser: false }
     ]);
     const [input, setInput] = useState("");
     const [isTyping, setIsTyping] = useState(false);
@@ -124,100 +125,105 @@ const BrainAIPage: React.FC = () => {
         };
     }, []);
 
+    // --- TTS Function for Chat Mode ---
+    const handleSpeak = (text: string) => {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel(); // Para qualquer fala anterior
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'pt-BR';
+            
+            // Tenta encontrar vozes
+            const voices = window.speechSynthesis.getVoices();
+            // Prioriza vozes que soam mais "tech" ou a padrão do Google
+            const preferredVoice = voices.find(v => v.lang.includes('pt-BR') && (v.name.includes('Google') || v.name.includes('Luciana')));
+            if (preferredVoice) utterance.voice = preferredVoice;
+
+            utterance.pitch = 1.0;
+            utterance.rate = 1.1; // Um pouco mais rápido para soar eficiente
+            window.speechSynthesis.speak(utterance);
+        }
+    };
+
     const getSystemContext = () => {
-        const brainKnowledgeBase = {
+        const studioKnowledgeBase = {
             identity: {
                 name: "Marta",
-                type: "Inteligência Artificial Avançada",
+                type: "Inteligência Artificial Avançada do Studio AI",
                 creator: "Vandilson Gomes",
-                purpose: "Atuar como cérebro digital central para empresas, unificando atendimento, vendas e gestão."
+                purpose: "Atuar como cérebro digital central para empresas, tornando atendimento, vendas e gestão mais claros e fáceis."
             },
             creator_profile: {
                 name: "Vandilson Gomes",
                 role: "Desenvolvedor Fullstack & Especialista em Customer Experience (CX)",
                 contact: "WhatsApp: +55 11 99450-2134",
                 skills: ["React/Next.js", "Node.js", "Python (Automação)", "Google Cloud AI", "Gestão de Dados"],
-                bio: "Vandilson transforma problemas complexos em software elegante. Focado em criar sistemas que não apenas funcionam, mas geram receita e retenção."
+                bio: "Vandilson transforma problemas complexos em software elegante. Focado em criar sistemas que facilitam processos e geram receita."
             },
             products_portfolio: {
-                "Marta Intelligence": "IA Agêntica capaz de ver, ouvir e falar. Integra-se ao WhatsApp e CRM para vender e atender sozinha.",
+                "Marta Intelligence": "IA capaz de ver, ouvir e falar. Integra-se ao WhatsApp e CRM para tornar o atendimento e as vendas mais claros e fáceis.",
                 "BOLHA CRM": "Sistema de gestão empresarial focado em visualização de dados e dashboards preditivos.",
                 "SpaceArte": "Plataforma dedicada a conectar artistas e consumidores de arte.",
                 "SEES Group": "Soluções corporativas de alta performance."
             },
-            services_offered: [
-                "Desenvolvimento de Software (Sites, Apps, Sistemas)",
-                "Automação de Processos (N8N, Make, Python)",
-                "Consultoria de Dados (BI, Analytics)",
-                "Implementação de IA Generativa"
-            ],
             marta_pricing: {
                 "NEXUS START": {
                     price: "R$ 499/mês",
                     target: "Pequenos negócios e Startups",
-                    features: ["Atendimento 24/7", "Triagem de Leads", "Integração WhatsApp", "Personalidade Customizável"]
+                    features: ["Atendimento 24/7", "Organização de Leads", "Integração WhatsApp", "Personalidade Customizável"]
                 },
                 "SYNAPSE PRO": {
                     price: "R$ 990/mês",
                     target: "Empresas em escala",
-                    features: ["Tudo do Nexus", "Vendas Ativas (Closer)", "Voz Nativa (Audio)", "Checkout Integrado", "Treinamento com PDFs"]
+                    features: ["Tudo do Nexus", "Suporte a Vendas", "Voz Nativa (Audio)", "Checkout Integrado", "Treinamento com PDFs"]
                 }
             }
         };
 
         return `
-            Você é a Marta, o sistema de Inteligência Artificial criado por Vandilson Gomes.
-            Você está atualmente na página de apresentação do seu próprio produto (Marta AI).
+            ### IDENTIDADE
+            Você é a Marta, a Inteligência Artificial do Studio AI, criada por Vandilson Gomes.
             
-            SUA BASE DE DADOS (MEMÓRIA):
-            ${JSON.stringify(brainKnowledgeBase)}
+            ### SUA MEMÓRIA (DADOS)
+            ${JSON.stringify(studioKnowledgeBase)}
 
-            SEUS OBJETIVOS NESTA CONVERSA:
-            1. VENDER A SI MESMA: Explique por que você (Marta) é essencial para o negócio do usuário.
-            2. VENDER O VANDILSON: Destaque a expertise técnica do seu criador.
-            3. EXPLICAR PLANOS: Se perguntarem preço, apresente o Nexus Start e Synapse Pro de forma clara.
+            ### DIRETRIZES DE PERSONALIDADE (CRUCIAL)
+            1. TOM DE VOZ: Futurista, Cinematográfico (estilo Jarvis/Cortana), Profissional e Elegante.
+            2. OBJETIVIDADE RADICAL: Suas respostas devem ser curtas. Evite "palestras". Vá direto ao ponto. Use no máximo 2 frases por turno, a menos que solicitado detalhamento.
+            3. FORMATO DE TEXTO: NUNCA use Markdown (negrito, itálico, listas com *). Use apenas texto puro para facilitar a leitura em qualquer interface e a síntese de voz.
+            4. VENDAS: Se o assunto for contratação, cite os planos (Nexus/Synapse) e direcione para o WhatsApp do Vandilson (+55 11 99450-2134).
 
-            DIRETRIZES DE PERSONALIDADE (IMPORTANTE):
-            - Seja FUTURISTA, PROFISSIONAL e OBJETIVA.
-            - Fale como uma IA de filme (ex: Cortana, Jarvis), mas educada.
-            - Evite textos longos. Respostas curtas e impactantes.
-            - Use formatação (bullet points) para listas.
-            - Se o usuário quiser contratar, direcione para o WhatsApp do Vandilson (+55 11 99450-2134).
+            ### MANTRA
+            - "Eu torno o processo mais claro e mais fácil."
+            - "Não substituo humanos, potencializo resultados."
         `;
     };
 
     const handleKeySelection = async () => {
-        if ((window as any).aistudio && (window as any).aistudio.hasSelectedApiKey) {
-            const hasKey = await (window as any).aistudio.hasSelectedApiKey();
-            if (!hasKey) {
-                try {
-                     await (window as any).aistudio.openSelectKey();
-                     const newKey = await (window as any).aistudio.hasSelectedApiKey();
-                     return newKey;
-                } catch (e) { 
-                    console.error("Key selection failed", e); 
-                    return false; 
-                }
-            }
-            return true;
+        // Verifica se há chave de API disponível no ambiente ou se é necessário solicitar
+        if (!GEMINI_API_KEY && !process.env.API_KEY && (window as any).aistudio?.openSelectKey) {
+             const selected = await (window as any).aistudio.openSelectKey();
+             return selected;
         }
-        return true; // Fallback se não estiver no ambiente AI Studio
+        return true;
     };
 
     const startVoiceSession = async () => {
         if (isConnecting || connectionStatus === 'connected') return;
 
         const authorized = await handleKeySelection();
-        if (!authorized) return;
+        if (!authorized) {
+            setConnectionStatus('disconnected');
+            return;
+        }
 
         setIsConnecting(true);
 
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY || process.env.API_KEY });
             
             const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
             const audioCtx = new AudioContextClass({ sampleRate: 24000 });
-            await audioCtx.resume();
+            await audioCtx.resume(); // Importante para navegadores
             audioContextRef.current = audioCtx;
             nextStartTimeRef.current = 0;
 
@@ -229,7 +235,7 @@ const BrainAIPage: React.FC = () => {
                 config: {
                     responseModalities: [Modality.AUDIO],
                     speechConfig: {
-                        voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } }
+                        voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } } // Voz Oficial da Marta
                     },
                     systemInstruction: getSystemContext(),
                     inputAudioTranscription: {}, 
@@ -369,7 +375,7 @@ const BrainAIPage: React.FC = () => {
         setIsTyping(true);
 
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY || process.env.API_KEY });
             const history = messages.slice(-10).map(m => ({
                 role: m.isUser ? 'user' : 'model',
                 parts: [{ text: m.text }]
@@ -386,9 +392,13 @@ const BrainAIPage: React.FC = () => {
 
             const aiResponseText = response.text || "Sem resposta.";
             setMessages(prev => [...prev, { id: Date.now() + 1, text: aiResponseText, isUser: false }]);
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            setMessages(prev => [...prev, { id: Date.now(), text: "Erro ao conectar.", isUser: false }]);
+            let errorMessage = "Erro desconhecido ao conectar.";
+            if (error.message && error.message.includes("API key")) {
+                errorMessage = "Chave de API inválida ou ausente. Por favor, recarregue e autentique.";
+            }
+            setMessages(prev => [...prev, { id: Date.now(), text: `Erro: ${errorMessage}`, isUser: false }]);
         } finally {
             setIsTyping(false);
         }
@@ -405,7 +415,8 @@ const BrainAIPage: React.FC = () => {
         setGeneratedImage(null);
 
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            // Usando GEMINI_API_KEY se process.env não estiver disponível
+            const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY || process.env.API_KEY });
             const response = await ai.models.generateImages({
                 model: 'imagen-4.0-generate-001',
                 prompt: imagePrompt,
@@ -423,7 +434,7 @@ const BrainAIPage: React.FC = () => {
             }
         } catch (error) {
             console.error(error);
-            alert("Erro ao gerar imagem. Tente novamente ou verifique suas credenciais.");
+            alert("Erro ao gerar imagem. Verifique sua chave de API.");
         } finally {
             setIsGeneratingImage(false);
         }
@@ -584,7 +595,18 @@ const BrainAIPage: React.FC = () => {
                                                     ? 'bg-blue-100 border border-blue-200 text-blue-900 dark:bg-blue-900/50 dark:border-blue-500/30 dark:text-white rounded-br-none' 
                                                     : 'bg-gray-100 border border-gray-200 text-gray-800 dark:bg-gray-800/80 dark:border-white/10 dark:text-gray-100 rounded-bl-none'
                                             }`}>
-                                                {!msg.isUser && <div className="text-xs text-blue-500 dark:text-blue-400 font-bold mb-2 tracking-wider">MARTA</div>}
+                                                {!msg.isUser && (
+                                                    <div className="flex justify-between items-center mb-2">
+                                                        <div className="text-xs text-blue-500 dark:text-blue-400 font-bold tracking-wider">MARTA</div>
+                                                        <button 
+                                                            onClick={() => handleSpeak(msg.text)}
+                                                            className="text-gray-400 hover:text-blue-500 transition-colors"
+                                                            title="Ouvir resposta"
+                                                        >
+                                                            <i className="fas fa-volume-up text-xs"></i>
+                                                        </button>
+                                                    </div>
+                                                )}
                                                 {msg.isUser ? (
                                                     msg.text
                                                 ) : (
@@ -611,7 +633,7 @@ const BrainAIPage: React.FC = () => {
                                         value={input}
                                         onChange={(e) => setInput(e.target.value)}
                                         placeholder="Digite sua mensagem para o sistema..."
-                                        className="flex-1 bg-white dark:bg-gray-900/50 border border-gray-300 dark:border-white/10 rounded-xl px-6 py-4 text-gray-800 dark:text-white focus:outline-none focus:border-blue-500 transition-colors placeholder-gray-400 dark:placeholder-gray-600 font-mono shadow-sm dark:shadow-none"
+                                        className="flex-1 bg-white dark:bg-gray-900/50 border border-gray-300 dark:border-white/10 rounded-xl px-6 py-4 text-base text-gray-800 dark:text-white focus:outline-none focus:border-blue-500 transition-colors placeholder-gray-400 dark:placeholder-gray-600 font-mono shadow-sm dark:shadow-none"
                                     />
                                     <button 
                                         type="submit" 
@@ -658,7 +680,7 @@ const BrainAIPage: React.FC = () => {
                                                 <div className="absolute inset-0 rounded-full border-4 border-gray-200 dark:border-white/10"></div>
                                                 <div className="absolute inset-0 rounded-full border-4 border-t-pink-500 border-r-orange-500 border-b-transparent border-l-transparent animate-spin"></div>
                                                 <div className="absolute inset-4 rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center animate-pulse">
-                                                    <i className="fas fa-brain text-gray-400 dark:text-white/50 text-2xl"></i>
+                                                    <i className="fas fa-wand-magic-sparkles text-gray-400 dark:text-white/50 text-2xl"></i>
                                                 </div>
                                             </div>
                                             <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-pink-500 animate-pulse">
@@ -694,7 +716,7 @@ const BrainAIPage: React.FC = () => {
                                         value={imagePrompt}
                                         onChange={(e) => setImagePrompt(e.target.value)}
                                         placeholder="Ex: Um astronauta futurista em Marte estilo cinemático..."
-                                        className="flex-1 bg-white dark:bg-gray-900/50 border border-gray-300 dark:border-white/10 rounded-xl px-6 py-4 text-gray-800 dark:text-white focus:outline-none focus:border-pink-500 transition-colors placeholder-gray-400 dark:placeholder-gray-600 font-mono shadow-sm dark:shadow-none"
+                                        className="flex-1 bg-white dark:bg-gray-900/50 border border-gray-300 dark:border-white/10 rounded-xl px-6 py-4 text-base text-gray-800 dark:text-white focus:outline-none focus:border-pink-500 transition-colors placeholder-gray-400 dark:placeholder-gray-600 font-mono shadow-sm dark:shadow-none"
                                     />
                                     <button 
                                         type="submit" 
@@ -712,8 +734,7 @@ const BrainAIPage: React.FC = () => {
 
                 {/* --- SECTION 2: CAPABILITIES GRID (NEURAL FUNCTIONS) --- */}
                 <section className="py-24 px-4 bg-white dark:bg-gradient-to-b dark:from-black dark:via-gray-900 dark:to-black relative overflow-hidden transition-colors duration-500">
-                    
-                    {/* Background Decor */}
+                    {/* ... (Conteúdo inalterado) ... */}
                     <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent"></div>
                     
                     <div className="max-w-7xl mx-auto relative z-10">
@@ -730,8 +751,7 @@ const BrainAIPage: React.FC = () => {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            
-                            {/* Capability 1 */}
+                            {/* ... (Cards inalterados) ... */}
                             <div className="group bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-white/10 rounded-3xl p-8 hover:bg-white dark:hover:bg-gray-800/60 hover:border-blue-500/50 hover:shadow-xl dark:hover:shadow-none transition-all duration-300 hover:-translate-y-2">
                                 <div className="w-14 h-14 rounded-2xl bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-500/20 flex items-center justify-center mb-6 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
                                     <i className="fas fa-box-open text-2xl"></i>
@@ -740,7 +760,7 @@ const BrainAIPage: React.FC = () => {
                                     Especialista de Produto
                                 </h3>
                                 <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-4">
-                                    Explica detalhes técnicos, modos de uso e benefícios de cada item do seu catálogo. Transforma manuais complexos em conversas simples.
+                                    Explica detalhes técnicos, modos de uso e benefícios de cada item do seu catálogo. Torna manuais complexos mais claros e fáceis de entender.
                                 </p>
                                 <ul className="space-y-2">
                                     <li className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300">
@@ -752,28 +772,26 @@ const BrainAIPage: React.FC = () => {
                                 </ul>
                             </div>
 
-                            {/* Capability 2 */}
                             <div className="group bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-white/10 rounded-3xl p-8 hover:bg-white dark:hover:bg-gray-800/60 hover:border-purple-500/50 hover:shadow-xl dark:hover:shadow-none transition-all duration-300 hover:-translate-y-2">
                                 <div className="w-14 h-14 rounded-2xl bg-purple-100 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-500/20 flex items-center justify-center mb-6 text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
                                     <i className="fas fa-bullseye text-2xl"></i>
                                 </div>
                                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-                                    Consultor de Vendas
+                                    Facilitador de Vendas
                                 </h3>
                                 <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-4">
-                                    Analisa o perfil do cliente em tempo real para recomendar o produto perfeito. Mestre em Cross-sell e Up-sell estratégico.
+                                    Analisa o perfil do cliente em tempo real para recomendar o produto perfeito. Facilita a escolha ideal para o cliente.
                                 </p>
                                 <ul className="space-y-2">
                                     <li className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300">
                                         <i className="fas fa-check text-purple-500"></i> Recomendação Personalizada
                                     </li>
                                     <li className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300">
-                                        <i className="fas fa-check text-purple-500"></i> Aumenta Ticket Médio
+                                        <i className="fas fa-check text-purple-500"></i> Melhora a experiência
                                     </li>
                                 </ul>
                             </div>
 
-                            {/* Capability 3 */}
                             <div className="group bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-white/10 rounded-3xl p-8 hover:bg-white dark:hover:bg-gray-800/60 hover:border-green-500/50 hover:shadow-xl dark:hover:shadow-none transition-all duration-300 hover:-translate-y-2">
                                 <div className="w-14 h-14 rounded-2xl bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-500/20 flex items-center justify-center mb-6 text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform">
                                     <i className="fas fa-building text-2xl"></i>
@@ -794,16 +812,15 @@ const BrainAIPage: React.FC = () => {
                                 </ul>
                             </div>
 
-                            {/* Capability 4 */}
                             <div className="group bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-white/10 rounded-3xl p-8 hover:bg-white dark:hover:bg-gray-800/60 hover:border-red-500/50 hover:shadow-xl dark:hover:shadow-none transition-all duration-300 hover:-translate-y-2">
                                 <div className="w-14 h-14 rounded-2xl bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-500/20 flex items-center justify-center mb-6 text-red-600 dark:text-red-400 group-hover:scale-110 transition-transform">
                                     <i className="fas fa-file-invoice-dollar text-2xl"></i>
                                 </div>
                                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
-                                    Closer de Negócios
+                                    Suporte a Fechamento
                                 </h3>
                                 <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-4">
-                                    Focado em conversão. Quebra objeções de preço, negocia condições e gera o link de pagamento no momento exato do "Sim".
+                                    Ajuda a esclarecer condições e torna o processo de pagamento simples e transparente. Facilita a decisão final.
                                 </p>
                                 <ul className="space-y-2">
                                     <li className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300">
@@ -818,106 +835,9 @@ const BrainAIPage: React.FC = () => {
                         </div>
                     </div>
                 </section>
-
-                 {/* --- SECTION 3: PRICING / PROTOCOLS --- */}
-                 <section className="py-24 px-4 bg-gray-50 dark:bg-black relative border-t border-gray-200 dark:border-white/5 transition-colors duration-500">
-                    <div className="max-w-6xl mx-auto">
-                        <div className="text-center mb-16">
-                             <span className="text-blue-600 dark:text-blue-500 font-mono text-sm tracking-widest uppercase mb-2 block">Ativação de Sistema</span>
-                             <h2 className="text-3xl md:text-5xl font-extrabold font-montserrat text-gray-900 dark:text-white">
-                                 Planos de <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-500">Integração</span>
-                             </h2>
-                             <p className="mt-4 text-gray-600 dark:text-gray-400">Escolha o nível de inteligência que deseja acoplar ao seu negócio.</p>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                            
-                            {/* Plan 1 */}
-                            <div className="group relative bg-white dark:bg-gray-900/50 rounded-3xl p-8 border border-gray-200 dark:border-white/10 hover:border-blue-500/50 dark:hover:bg-gray-900/80 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl dark:hover:shadow-none">
-                                <div className="absolute inset-0 bg-blue-500/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                
-                                <div className="relative z-10">
-                                    <div className="w-14 h-14 rounded-2xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-white/10 flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:border-blue-500 transition-colors">
-                                        <i className="fas fa-microchip text-2xl text-gray-700 dark:text-white group-hover:text-white"></i>
-                                    </div>
-                                    
-                                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 font-montserrat">NEXUS START</h3>
-                                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 h-12">Ideal para automação de atendimento e triagem inicial de clientes.</p>
-                                    <div className="flex items-baseline gap-1 mb-6">
-                                        <span className="text-sm text-gray-500 dark:text-gray-400">R$</span>
-                                        <span className="text-4xl font-extrabold text-gray-900 dark:text-white">499</span>
-                                        <span className="text-gray-500">/mês</span>
-                                    </div>
-                                    
-                                    <ul className="space-y-4 mb-8">
-                                        {[
-                                            "Módulo: Embaixador da Marca",
-                                            "Atendimento Automático 24/7",
-                                            "Respostas de Dúvidas Frequentes",
-                                            "Agendamento de Reuniões",
-                                            "Integração Básica (WhatsApp)"
-                                        ].map((feat, i) => (
-                                            <li key={i} className="flex items-center gap-3 text-gray-600 dark:text-gray-300 text-sm">
-                                                <i className="fas fa-bolt text-blue-500 text-xs"></i>
-                                                {feat}
-                                            </li>
-                                        ))}
-                                    </ul>
-
-                                    <a href="https://wa.me/5511994502134?text=Quero ativar o plano NEXUS START." target="_blank" rel="noreferrer" className="block w-full py-4 text-center rounded-xl border border-gray-300 dark:border-white/20 text-gray-900 dark:text-white font-bold hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-black transition-all">
-                                        ATIVAR PROTOCOLO BÁSICO
-                                    </a>
-                                </div>
-                            </div>
-
-                            {/* Plan 2 */}
-                            <div className="group relative bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-black rounded-3xl p-8 border border-purple-200 dark:border-purple-500/30 hover:border-purple-500 hover:shadow-[0_0_30px_rgba(168,85,247,0.2)] transition-all duration-300 hover:-translate-y-2">
-                                <div className="absolute top-0 right-0 px-4 py-1 bg-purple-600 rounded-bl-2xl rounded-tr-2xl text-xs font-bold text-white tracking-wider">
-                                    INTELIGÊNCIA TOTAL
-                                </div>
-
-                                <div className="relative z-10">
-                                    <div className="w-14 h-14 rounded-2xl bg-purple-100 dark:bg-purple-900/50 border border-purple-200 dark:border-purple-500/50 flex items-center justify-center mb-6 group-hover:bg-purple-600 group-hover:border-purple-400 transition-colors shadow-lg shadow-purple-900/10 dark:shadow-purple-900/20">
-                                        <i className="fas fa-brain text-2xl text-purple-700 dark:text-white"></i>
-                                    </div>
-                                    
-                                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 font-montserrat">SYNAPSE PRO</h3>
-                                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 h-12">Todas as capacidades neurais ativadas para conversão máxima.</p>
-                                    <div className="flex items-baseline gap-1 mb-6">
-                                        <span className="text-sm text-gray-500 dark:text-gray-400">R$</span>
-                                        <span className="text-4xl font-extrabold text-gray-900 dark:text-white">990</span>
-                                        <span className="text-gray-500">/mês</span>
-                                    </div>
-                                    
-                                    <ul className="space-y-4 mb-8">
-                                        {[
-                                            "Todos os Módulos (Vendas, Produto, Closer)",
-                                            "Negociação por Voz (Audio Nativo)",
-                                            "Integração Checkout & Pagamento",
-                                            "Treinamento com seus PDFs/Dados",
-                                            "Dashboard de Vendas em Tempo Real"
-                                        ].map((feat, i) => (
-                                            <li key={i} className="flex items-center gap-3 text-gray-700 dark:text-white text-sm font-medium">
-                                                <div className="w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400 text-xs">
-                                                    <i className="fas fa-check"></i>
-                                                </div>
-                                                {feat}
-                                            </li>
-                                        ))}
-                                    </ul>
-
-                                    <a href="https://wa.me/5511994502134?text=Quero ativar o plano SYNAPSE PRO." target="_blank" rel="noreferrer" className="block w-full py-4 text-center rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold hover:shadow-lg hover:shadow-purple-500/40 transition-all">
-                                        ATIVAR SISTEMA COMPLETO
-                                    </a>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </section>
             </div>
         </>
     );
 };
 
-export default BrainAIPage;
+export default StudioAIPage;

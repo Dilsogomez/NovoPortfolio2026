@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -10,12 +11,12 @@ import Metrics from './components/Metrics';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import FloatingChatbot from './components/FloatingChatbot';
-import BrainAIPage from './components/BrainAIPage';
+import StudioAIPage from './components/BrainAIPage'; // Arquivo mantido, componente renomeado
 import LabPage from './components/LabPage';
 
 function App() {
     const [showBackToTop, setShowBackToTop] = useState(false);
-    const [currentPage, setCurrentPage] = useState<'home' | 'projects' | 'courses' | 'blog' | 'brain-ai' | 'lab'>('home');
+    const [currentPage, setCurrentPage] = useState<'home' | 'projects' | 'courses' | 'blog' | 'studio-ai' | 'lab'>('home');
     
     // Theme State Management
     const [theme, setTheme] = useState<'dark' | 'light'>(() => {
@@ -54,7 +55,7 @@ function App() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    const handleNavigation = (page: 'home' | 'projects' | 'courses' | 'blog' | 'brain-ai' | 'lab') => {
+    const handleNavigation = (page: 'home' | 'projects' | 'courses' | 'blog' | 'studio-ai' | 'lab') => {
         setCurrentPage(page);
         window.scrollTo({ top: 0, behavior: 'instant' });
     };
@@ -102,15 +103,15 @@ function App() {
                     <BlogPage />
                 )}
 
-                {currentPage === 'brain-ai' && (
-                    <BrainAIPage />
+                {currentPage === 'studio-ai' && (
+                    <StudioAIPage />
                 )}
             </main>
 
             {currentPage !== 'lab' && <Footer />}
 
             {/* Oculta o chat flutuante se estiver na página dedicada da IA ou no Laboratório para evitar duplicação */}
-            {currentPage !== 'brain-ai' && currentPage !== 'lab' && <FloatingChatbot />}
+            {currentPage !== 'studio-ai' && currentPage !== 'lab' && <FloatingChatbot />}
 
             {/* Back To Top Button */}
             <button

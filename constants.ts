@@ -1,6 +1,11 @@
 
 import { Project, Tool, Metric, NavItem, SocialLink, ResultItem, Course, BlogPost, LabImage, LabStudy, LabVideo } from './types';
 
+// --- SECURITY CONFIGURATION ---
+// ATENÇÃO: Configure restrições de HTTP Referrer no Google Cloud Console para proteger esta chave.
+// Permita apenas o domínio do seu site (ex: seusite.com e localhost).
+export const GEMINI_API_KEY = 'AIzaSyDf-6k3m1ORpoHaCS3s2qmQ81w8RQ9sSOM';
+
 export const NAV_ITEMS: NavItem[] = [
     { label: 'Serviços', href: '#ferramentas' },
     { label: 'Projetos', href: '#projetos' },
@@ -20,14 +25,14 @@ export const SOCIAL_LINKS: SocialLink[] = [
 export const PROJECTS: Project[] = [
     {
         title: "Marta | Artificial Intelligence",
-        description: "Uma Mente. Múltiplas Funções. Sistema de IA avançado que se adapta para atuar como Consultora Técnica, Estrategista de Vendas e Closer de Negócios. Processamento de voz e dados em tempo real.",
+        description: "Uma Mente. Múltiplas Funções. Sistema de IA avançado que se adapta para tornar processos técnicos e comerciais mais claros e fáceis. Processamento de voz e dados em tempo real.",
         image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=1000&auto=format&fit=crop",
         link: "https://wa.me/5511994502134",
         status: 'Online'
     },
     {
         title: "BOLHA | Sistema de informação",
-        description: "Tenha uma visão estratégica do seu negócio. Monitore sua operação em tempo real através de dados, com dashboards intuitivos, relatórios completos e análises preditivas impulsionadas por Inteligência Artificial.",
+        description: "Tenha uma visão estratégica do seu negócio. Monitore sua operação em tempo real através de dados, com dashboards intuitivos que deixam a gestão mais clara.",
         image: "https://github.com/Dilsogomez/Dilsogomez.github.io/blob/main/bolhacrm.png?raw=true",
         link: "https://wa.me/5511994502134",
         status: 'Online'
@@ -41,14 +46,14 @@ export const PROJECTS: Project[] = [
     },
     {
         title: "SEES | Space ",
-        description: "Descubra as soluções digitais da SEES que combinam eficiencia, design moderno, segurança robusta e inteligência artificial para impulsionar sua produtividade.",
+        description: "Descubra as soluções digitais da SEES que combinam eficiência e design moderno para facilitar sua produtividade.",
         image: "https://github.com/Dilsogomez/Dilsogomez.github.io/blob/main/SEES%20GROUP%20FOTO.png?raw=true",
         link: "https://anjossilva.lojavirtualnuvem.com.br/",
         status: 'Online'
     },
     {
         title: "SEES | Black ",
-        description: "Solução completa para gerenciamento financeiro pessoal e empresarial. Aplicativos de alta eficiência para rotina corporativa.",
+        description: "Solução completa para gerenciamento financeiro pessoal e empresarial. Aplicativos eficientes para facilitar a rotina corporativa.",
         image: "https://github.com/Dilsogomez/Dilsogomez.github.io/blob/main/Captura%20de%20tela%202025-08-16%20110347.png?raw=true",
         link: "#",
         status: 'Offline'
@@ -58,28 +63,28 @@ export const PROJECTS: Project[] = [
 export const TOOLS: Tool[] = [
     {
         title: "Análise de Dados",
-        description: "Ferramentas para análise e visualização de dados em tempo real com dashboards interativos.",
+        description: "Ferramentas para visualização de dados que tornam a interpretação de informações mais fácil.",
         iconClass: "fas fa-chart-line",
-        features: ["Dashboards em tempo real", "Análises preditivas", "Relatórios automáticos", "Visualizações interativas"],
+        features: ["Dashboards claros", "Análises intuitivas", "Relatórios simplificados", "Visualizações interativas"],
         badges: ["Power BI", "Excel", "Sheets"]
     },
     {
-        title: "Automação de Processos",
-        description: "Sistemas para automatizar tarefas repetitivas, chatbots inteligentes e IA segmentada.",
+        title: "Otimização de Processos",
+        description: "Sistemas para tornar tarefas repetitivas mais fáceis e fluxos de trabalho mais claros.",
         iconClass: "fas fa-cogs",
-        features: ["Chatbots", "IA Segmentada", "Automação de workflows", "Integração de sistemas", "Gestão de tarefas"],
+        features: ["Chatbots auxiliares", "IA Facilitadora", "Workflows organizados", "Integração de sistemas", "Gestão de tarefas"],
         badges: ["IA", "N8N", "API"]
     },
     {
         title: "E-commerce Solutions",
-        description: "Plataformas completas para gestão de lojas virtuais e marketplaces.",
+        description: "Plataformas completas para gestão de lojas virtuais de forma clara e eficiente.",
         iconClass: "fas fa-shopping-cart",
-        features: ["Gestão de inventário", "Processamento de pagamentos", "Logística integrada", "CRM para clientes"],
+        features: ["Gestão de inventário", "Processamento facilitado", "Logística integrada", "CRM organizado"],
         badges: ["Sites", "Landpages", "Checkout"]
     },
     {
         title: "Marca Solutions",
-        description: "Produção de videos e imagens em alta resolução, banners, copys, sites, web apps.",
+        description: "Produção de videos e imagens para deixar sua comunicação mais clara e atraente.",
         iconClass: "fas fa-photo-video",
         features: ["Produção Audiovisual", "Design Gráfico & Banners", "Copywriting", "Sites & Web Apps"],
         badges: ["Desenvolvimento web", "Api de integração", "Google Ferramentas"]
@@ -91,28 +96,28 @@ export const RESULTS: ResultItem[] = [
         value: 40, 
         suffix: "%", 
         title: "Aumento de Produtividade", 
-        description: "Empresas que implementam automação de processos repetitivos observam um ganho significativo na eficiência das equipes.",
+        description: "Empresas que simplificam processos observam um ganho significativo na eficiência das equipes.",
         iconClass: "fas fa-tachometer-alt" 
     },
     { 
         value: 30, 
         suffix: "%", 
         title: "Otimização de Investimento", 
-        description: "O controle centralizado de informações e a precisão operacional otimizam significativamente os investimentos e custos.",
+        description: "O controle centralizado de informações e a clareza operacional otimizam significativamente os investimentos.",
         iconClass: "fas fa-coins" 
     },
     { 
         value: 5, 
         suffix: "x", 
         title: "Tomada de Decisão", 
-        description: "Organizações orientadas a dados (Data-Driven) tomam decisões estratégicas até 5 vezes mais rápidas que a concorrência.",
+        description: "Organizações orientadas a dados tomam decisões estratégicas mais rápidas e com mais clareza.",
         iconClass: "fas fa-bolt" 
     },
     { 
         value: 95, 
         suffix: "%", 
         title: "Precisão da Informação", 
-        description: "A integração de sistemas harmoniza os dados e garante a integridade das informações para relatórios gerenciais.",
+        description: "A integração de sistemas facilita o acesso e garante a integridade das informações.",
         iconClass: "fas fa-check-double" 
     },
 ];
@@ -121,43 +126,43 @@ export const COURSES: Course[] = [
     {
         title: "Inteligência de Dados",
         institution: "Análise & Estratégia",
-        description: "Aprenda a transformar dados brutos em decisões inteligentes para o seu negócio.",
+        description: "Aprenda a transformar dados brutos em decisões claras e fáceis.",
         tags: ["Dados", "Analytics", "Estratégia"],
         completed: true,
         videos: [
             { title: "1. Como analisar informações?", url: "" },
             { title: "2. Como usar informações coletadas?", url: "" },
-            { title: "3. Chegando a um resultado a partir de uma informação.", url: "" }
+            { title: "3. Chegando a um resultado.", url: "" }
         ]
     },
     {
         title: "Presença Digital",
         institution: "Web & E-commerce",
-        description: "O caminho completo para estabelecer sua marca e vender produtos na internet.",
+        description: "O caminho completo para estabelecer sua marca de forma clara na internet.",
         tags: ["Web Design", "E-commerce", "Vendas"],
         completed: true,
         videos: [
             { title: "1. Como construir um site.", url: "" },
-            { title: "2. Como construir uma loja online.", url: "" },
+            { title: "2. Como construir uma loja.", url: "" },
             { title: "3. Como vender na internet.", url: "" }
         ]
     },
     {
         title: "Escala & Marketing",
-        institution: "Automação & Tráfego",
-        description: "Escale sua operação automatizando processos e atingindo o público certo.",
-        tags: ["Automação", "Ads", "CRM"],
+        institution: "Otimização & Tráfego",
+        description: "Escale sua operação tornando processos mais fáceis e atingindo o público certo.",
+        tags: ["Processos", "Ads", "CRM"],
         completed: true,
         videos: [
-            { title: "1. Como automatizar processos.", url: "" },
-            { title: "2. Como veicular seus anúncios.", url: "" },
+            { title: "1. Como organizar processos.", url: "" },
+            { title: "2. Como veicular anúncios.", url: "" },
             { title: "3. Estude seu cliente.", url: "" }
         ]
     },
     {
         title: "Gestão & Ética",
         institution: "Finanças & Carreira",
-        description: "Fundamentos sólidos para crescimento financeiro sustentável e ético.",
+        description: "Fundamentos sólidos para crescimento financeiro claro e ético.",
         tags: ["Finanças", "Investimento", "Mindset"],
         completed: true,
         videos: [
@@ -173,8 +178,8 @@ export const COURSES: Course[] = [
 export const POSTS: BlogPost[] = [
     {
         id: 1,
-        title: "A Evolução da IA no Atendimento ao Cliente",
-        excerpt: "Uma análise profunda sobre como Large Language Models (LLMs) e Agentes Autônomos estão redefinindo a experiência do consumidor (CX) e otimizando o suporte.",
+        title: "A Evolução da IA no Atendimento",
+        excerpt: "Uma análise sobre como Large Language Models (LLMs) estão ajudando a deixar a experiência do consumidor (CX) mais clara e fácil.",
         category: "Tecnologia",
         date: "Atualizado",
         readTime: "12 min",
@@ -182,31 +187,29 @@ export const POSTS: BlogPost[] = [
         author: "Vandilson Gomes",
         authorRole: "CX & Inovação",
         content: `
-            <p>O atendimento ao cliente está passando por uma transformação significativa. Durante décadas, estivemos focados no desafio de equilibrar o triângulo do suporte: rapidez, investimento e humanização. Com a ascensão da Inteligência Artificial Generativa, especificamente os Large Language Models (LLMs), estamos vendo a superação dessas fronteiras. Não estamos mais falando apenas de respostas automáticas baseadas em árvores de decisão, mas de uma verdadeira <strong>evolução cognitiva</strong>.</p>
+            <p>O atendimento ao cliente está passando por uma evolução. Durante décadas, estivemos focados no desafio de equilibrar rapidez e qualidade. Com a Inteligência Artificial Generativa, estamos vendo novas formas de facilitar essas interações. Não estamos falando de substituir o humano, mas de oferecer ferramentas que tornam tudo mais claro.</p>
             
-            <h2>A Nova Era do "Zero Latency"</h2>
-            <p>A métrica de "Tempo Médio de Espera" (TME) está sendo otimizada. Com a implementação de agentes virtuais avançados, empresas conseguem oferecer atendimento instantâneo e simultâneo para milhares de clientes. Diferente dos chatbots tradicionais que tinham limitações ao encontrar uma palavra-chave não programada, os novos modelos entendem <em>contexto, intenção e sentimento</em>.</p>
-            <p>Imagine um cenário onde a IA não apenas responde, mas resolve:</p>
+            <h2>A Nova Era da Clareza</h2>
+            <p>Com agentes virtuais avançados, empresas conseguem oferecer suporte instantâneo que ajuda a esclarecer dúvidas complexas. Diferente de sistemas antigos, os novos modelos entendem contexto e intenção, facilitando a vida do cliente.</p>
+            <p>Imagine um cenário onde a IA facilita:</p>
             <ul>
-                <li><strong>Análise de Sentimento em Tempo Real:</strong> O sistema compreende a necessidade do cliente e ajusta o tom da resposta para ser mais empático ou escala imediatamente para um humano sênior.</li>
-                <li><strong>Hiper-Personalização:</strong> A IA acessa o histórico do CRM instantaneamente, sabendo que o cliente comprou um tênis semana passada e provavelmente está ligando para saber da entrega, antecipando a resposta antes mesmo da pergunta.</li>
-                <li><strong>Memória de Longo Prazo:</strong> O sistema lembra de interações passadas ocorridas meses atrás, criando uma continuidade na conversa que valoriza o relacionamento.</li>
+                <li><strong>Entendimento em Tempo Real:</strong> O sistema compreende a necessidade do cliente e fornece informações precisas de forma simples.</li>
+                <li><strong>Personalização:</strong> A IA acessa o histórico para tornar a conversa mais relevante e fácil, sem perguntas repetitivas.</li>
             </ul>
 
-            <h2>Agentes Autônomos vs. Chatbots Tradicionais</h2>
-            <p>A grande mudança está na capacidade "agêntica" das novas IAs. Enquanto um chatbot tradicional segue um roteiro linear, um Agente de IA tem objetivos claros. Se o objetivo é "resolver o problema de pagamento", o agente pode consultar o gateway, verificar o saldo e sugerir soluções proativas, tudo de forma autônoma via APIs.</p>
+            <h2>Facilitadores vs. Ferramentas Tradicionais</h2>
+            <p>A grande mudança está na capacidade de facilitar processos. Se o objetivo é "resolver um problema", o agente ajuda a encontrar a solução de forma mais direta.</p>
             
-            <blockquote>"A IA vem para potencializar o atendimento humano. O futuro é híbrido: a máquina cuida da eficiência, o humano cuida da empatia complexa."</blockquote>
+            <blockquote>"A IA vem para potencializar. O futuro é sobre tornar processos complexos em experiências simples e claras."</blockquote>
 
-            <h2>O Impacto na Eficiência e Retenção (LTV)</h2>
-            <p>Implementar IA no atendimento é sobre otimizar investimentos operacionais e elevar a eficiência. O verdadeiro valor está no aumento do <strong>Lifetime Value (LTV)</strong>. Clientes que têm suas solicitações atendidas em segundos tendem a comprar novamente e a recomendar a marca.</p>
-            <p>Estamos caminhando para um futuro onde o suporte ao cliente se tornará um centro de inteligência e vendas, onde cada interação é uma oportunidade de coletar dados estruturados sobre as necessidades do consumidor e oferecer soluções proativas. As empresas que abraçam essa transição garantem relevância e liderança no mercado.</p>
+            <h2>O Impacto na Experiência</h2>
+            <p>Implementar IA é sobre tornar a jornada do cliente mais fácil. Clientes que têm suas solicitações esclarecidas rapidamente tendem a ficar mais satisfeitos.</p>
         `
     },
     {
         id: 2,
-        title: "Dados como Ativo Estratégico: O Novo Valor",
-        excerpt: "Como transformar terabytes de informações brutas em inteligência de negócios acionável. O guia definitivo para empresas Data-Driven.",
+        title: "Dados como Ativo: Clareza Estratégica",
+        excerpt: "Como transformar informações brutas em inteligência fácil de entender. O guia para empresas que buscam clareza.",
         category: "Análise de Dados",
         date: "Atualizado",
         readTime: "10 min",
@@ -214,73 +217,45 @@ export const POSTS: BlogPost[] = [
         author: "Vandilson Gomes",
         authorRole: "Analista de Dados",
         content: `
-            <p>Vivemos em uma era de abundância de dados e oportunidades de insights. Em um mundo digital, cada clique, rolagem de tela e transação gera um valor digital. Utilizar esses dados é como navegar com precisão. As organizações que dominam a arte de capturar, processar e agir sobre seus dados — as chamadas empresas <em>Data-Driven</em> — crescem significativamente mais rápido ao antecipar tendências.</p>
+            <p>Vivemos em uma era de abundância de dados. As organizações que sabem organizar essas informações ganham clareza para navegar no mercado.</p>
 
-            <h2>Da Intuição à Evidência: A Decisão Assertiva</h2>
-            <p>Tradicionalmente, muitas decisões corporativas eram baseadas na intuição. A cultura de dados democratiza a decisão. Quando um dashboard aponta que o produto A tem uma margem de lucro 20% superior ao produto B em uma região específica, a estratégia ganha precisão frente ao fato.</p>
+            <h2>Da Complexidade à Clareza</h2>
+            <p>Tradicionalmente, dados eram difíceis de interpretar. A cultura de dados facilita a decisão. Quando um dashboard mostra claramente as métricas, a estratégia fica óbvia.</p>
             
-            <h2>O Ciclo de Vida do Dado: ETL e Governança</h2>
-            <p>Para que o dado se torne um ativo, ele precisa passar por um refinamento rigoroso. É necessário transformar o "Data Lake" em um oceano de dados acessíveis. O processo envolve:</p>
+            <h2>O Ciclo da Informação</h2>
+            <p>Para que o dado ajude, ele precisa ser fácil de acessar:</p>
             <ul>
-                <li><strong>Extração (Extract):</strong> Conectar fontes diversas — CRM, ERP, Google Analytics, Redes Sociais — para criar sinergia.</li>
-                <li><strong>Transformação (Transform):</strong> Organizar o dado. Remover duplicatas, padronizar formatações e unificar padrões. Um dado tratado ("Quality In") leva inevitavelmente a conclusões precisas ("Quality Out").</li>
-                <li><strong>Carga e Visualização (Load & Viz):</strong> Apresentar isso em ferramentas como Power BI ou Tableau. O segredo aqui não é mostrar <em>tudo</em>, mas mostrar o que <em>importa</em>. A visualização deve contar uma história e apresentar soluções.</li>
+                <li><strong>Organização:</strong> Conectar fontes diversas para criar sinergia.</li>
+                <li><strong>Simplificação:</strong> Remover o que não importa e padronizar. Um dado claro leva a conclusões precisas.</li>
+                <li><strong>Visualização:</strong> Apresentar isso de forma que qualquer um entenda a história por trás dos números.</li>
             </ul>
-
-            <h2>Os 4 Níveis de Análise de Dados</h2>
-            <p>As empresas evoluem através de quatro estágios de maturidade analítica:</p>
-            <ol>
-                <li><strong>Descritiva:</strong> O que aconteceu? (Relatórios históricos).</li>
-                <li><strong>Diagnóstica:</strong> Por que aconteceu? (Análise de causa raiz).</li>
-                <li><strong>Preditiva:</strong> O que vai acontecer? (Projeções baseadas em tendências).</li>
-                <li><strong>Prescritiva:</strong> Como podemos fazer acontecer? (Ação recomendada automaticamente).</li>
-            </ol>
-            <p>Ao cruzar dados de sazonalidade, comportamento de navegação e indicadores econômicos, algoritmos podem prever tendências de comportamento do cliente antes mesmo da decisão de compra. Isso permite que a empresa aja preventivamente. O dado deixa de ser um retrovisor para se tornar um farol, iluminando o caminho à frente.</p>
         `
     },
     {
         id: 3,
-        title: "Automação de Processos com N8N e Low-Code",
-        excerpt: "A democratização da engenharia de dados. Como ferramentas visuais estão permitindo criar fluxos de trabalho complexos e escaláveis de forma ágil.",
-        category: "Automação",
+        title: "Facilitando Processos com N8N",
+        excerpt: "Como ferramentas visuais estão permitindo criar fluxos de trabalho organizados de forma mais fácil.",
+        category: "Otimização",
         date: "Atualizado",
         readTime: "11 min",
         imageUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2000&auto=format&fit=crop",
         author: "Vandilson Gomes",
-        authorRole: "DevOps & Automação",
+        authorRole: "DevOps",
         content: `
-            <p>A gestão inteligente de tarefas repetitivas é o maior aliado da criatividade e da produtividade estratégica. Transferir dados de uma planilha para um CRM, enviar e-mails transacionais ou monitorar redes sociais são tarefas que sistemas realizam com excelência e velocidade. A evolução do <strong>Low-Code</strong> e ferramentas como o N8N veio para libertar o potencial humano para atividades cognitivas de alto nível.</p>
+            <p>A gestão inteligente de tarefas é aliada da produtividade. Transferir dados e organizar informações são tarefas que podem ser facilitadas por sistemas. Ferramentas como N8N ajudam a deixar o fluxo de trabalho mais leve.</p>
 
-            <h2>Por que N8N? A Vantagem do Fluxo Visual</h2>
-            <p>Diferente de escrever scripts complexos que precisam de manutenção constante, o N8N oferece uma interface baseada em nós (nodes). Você visualiza o dado fluindo de um ponto A para um ponto B em tempo real. Isso traz transparência e agilidade:</p>
+            <h2>Por que N8N? A Vantagem Visual</h2>
+            <p>Você visualiza o dado fluindo de um ponto A para um ponto B. Isso traz clareza:</p>
             <ul>
-                <li><strong>Conectividade Universal:</strong> O N8N conecta praticamente qualquer plataforma via API (REST ou GraphQL). Slack, Trello, WhatsApp, Google Sheets, Bancos SQL, OpenAI.</li>
-                <li><strong>Lógica Avançada:</strong> Ele permite criar ramificações, loops, fusão de dados e tratamento de exceções complexos visualmente, oferecendo flexibilidade total.</li>
-                <li><strong>Privacidade e Controle:</strong> Para empresas focadas em segurança de dados, o N8N pode ser hospedado em servidores próprios, garantindo total governança da informação.</li>
+                <li><strong>Conectividade:</strong> Conecta plataformas para que elas conversem entre si facilmente.</li>
+                <li><strong>Organização:</strong> Permite criar fluxos lógicos visualmente, oferecendo flexibilidade.</li>
             </ul>
-
-            <h2>Conectividade Total: Exemplo Prático de Workflow</h2>
-            <p>Imagine o seguinte cenário automatizado de qualificação de leads:</p>
-            <ol>
-                <li><strong>Gatilho:</strong> Um cliente preenche um formulário no site.</li>
-                <li><strong>Verificação:</strong> O sistema verifica no banco de dados se esse contato já existe.</li>
-                <li><em>Se existir:</em> Atualiza o registro com a nova data de interação e notifica a equipe de sucesso do cliente.</li>
-                <li><em>Se não existir:</em> 
-                    <ul>
-                        <li>Cria o lead no CRM.</li>
-                        <li>Enriquece o dado buscando informações públicas corporativas.</li>
-                        <li>Classifica o lead usando IA para entender a demanda.</li>
-                        <li>Envia uma mensagem de boas-vindas personalizada.</li>
-                    </ul>
-                </li>
-            </ol>
-            <p>Isso acontece em milissegundos, 24 horas por dia, 7 dias por semana, com precisão total. Isso não é apenas eficiência; é escalabilidade. Uma empresa pode dobrar seu volume de leads mantendo a excelência de sua equipe administrativa.</p>
         `
     },
     {
         id: 4,
-        title: "O Futuro do E-commerce: Hiper-Personalização",
-        excerpt: "Análise de tendências: Composible Commerce, Checkout Invisível e a era onde a loja se adapta ao usuário para oferecer a melhor experiência.",
+        title: "E-commerce: A Era da Facilidade",
+        excerpt: "Como tornar a experiência de compra mais clara e fácil para oferecer a melhor jornada ao usuário.",
         category: "Tendências",
         date: "Atualizado",
         readTime: "9 min",
@@ -288,20 +263,13 @@ export const POSTS: BlogPost[] = [
         author: "Vandilson Gomes",
         authorRole: "Estratégia Comercial",
         content: `
-            <p>O e-commerce tradicional, baseado em vitrines estáticas e categorias rígidas, está se transformando. Entramos na era da <strong>"Loja para Cada Um"</strong>. Com o dinamismo do mercado digital e o investimento em tráfego pago (Ads), a melhor forma de manter margens saudáveis e focar na valorização da marca é através da relevância extrema.</p>
+            <p>O e-commerce está evoluindo para ser mais fácil. Entramos na era da conveniência e clareza.</p>
 
-            <h2>A Era da Hiper-Personalização</h2>
-            <p>Não estamos falando apenas de saudações personalizadas. Estamos falando de vitrines dinâmicas e fluidas. Se um usuário entra no seu site e o histórico mostra preferências específicas, a home page pode ser adaptada em tempo real para refletir isso. Algoritmos de recomendação agora usam inteligência semântica para entender o gosto do usuário.</p>
+            <h2>A Era da Facilidade</h2>
+            <p>Não estamos falando apenas de tecnologia, mas de deixar a vida do usuário mais fácil. Se um usuário entra no site, a navegação deve ser intuitiva e clara.</p>
 
-            <h2>Fluidez Total e Checkout Invisível</h2>
-            <p>O principal foco para a conversão é a fluidez. Simplificar formulários em telas de celular é um impulsionador de vendas. O futuro pertence às carteiras digitais e ao checkout de um clique (1-click buy) integrados nativamente nas redes sociais e no WhatsApp.</p>
-            <ul>
-                <li><strong>Composible Commerce:</strong> A arquitetura de e-commerce está evoluindo para microsserviços. Você conecta as melhores ferramentas de busca, checkout e gestão de conteúdo via API. Isso permite agilidade na inovação contínua.</li>
-                <li><strong>Omnichannel Real:</strong> O cliente começa a compra no Instagram, tira dúvida no WhatsApp com um bot e retira na loja física, com total integração de dados.</li>
-            </ul>
-
-            <h2>Logística Inteligente e Dark Stores</h2>
-            <p>O consumidor moderno valoriza a agilidade. A IA está sendo usada para prever demanda regional e posicionar estoques em "dark stores" locais antes mesmo das vendas acontecerem. O produto chega mais rápido porque já estava estrategicamente posicionado, baseado na probabilidade estatística de compra. O e-commerce do futuro é sobre vender conveniência, identidade e experiência.</p>
+            <h2>Fluidez Total</h2>
+            <p>O foco é remover barreiras. Simplificar formulários torna a compra mais agradável. O futuro é sobre processos que fluem sem atrito.</p>
         `
     }
 ];
@@ -344,43 +312,43 @@ export const LAB_IMAGES: LabImage[] = [
 export const LAB_STUDIES: LabStudy[] = [
     {
         id: 1,
-        title: "Integração Neural de APIs",
-        description: "Estudo sobre como conectar múltiplos LLMs via REST e GraphQL para criar ecossistemas autônomos.",
+        title: "Integração Facilitada",
+        description: "Estudo sobre como conectar múltiplos sistemas para criar ecossistemas mais organizados.",
         status: "Em Andamento",
         date: "Processando...",
-        tags: ["API", "Backend", "Automação"]
+        tags: ["API", "Backend", "Facilitação"]
     },
     {
         id: 2,
-        title: "Geração de Vídeo Generativa",
-        description: "Experimento utilizando modelos de vídeo (Veo) para criar narrativas visuais sem intervenção humana.",
+        title: "Geração de Vídeo Assistida",
+        description: "Experimento utilizando modelos de vídeo para ajudar na criação de narrativas visuais.",
         status: "Em Andamento",
         date: "Processando...",
         tags: ["Video AI", "Veo", "Criatividade"]
     },
     {
         id: 3,
-        title: "Otimização de Fluxo Empresarial",
-        description: "Análise completa sobre gargalos operacionais em empresas de tecnologia.",
+        title: "Otimização de Fluxo",
+        description: "Análise completa sobre como deixar processos operacionais mais fluídos.",
         status: "Concluído",
         date: "Finalizado",
-        tags: ["Análise", "Eficiência", "Dados"]
+        tags: ["Análise", "Clareza", "Dados"]
     }
 ];
 
 export const LAB_VIDEOS: LabVideo[] = [
     {
         id: 1,
-        title: "Demo: Agente de Vendas AI",
-        description: "Demonstração de um agente negociando preços via WhatsApp.",
+        title: "Demo: Assistente de Vendas",
+        description: "Demonstração de como tornar a negociação mais clara.",
         thumbnailUrl: "https://images.unsplash.com/photo-1596524430615-b46475ddff6e?q=80&w=1000&auto=format&fit=crop",
         videoUrl: "", 
         duration: "Automático"
     },
     {
         id: 2,
-        title: "Timelapse: Workflow Autônomo",
-        description: "Construção de fluxo de automação no N8N.",
+        title: "Timelapse: Workflow Facilitado",
+        description: "Construção de fluxo para organizar processos no N8N.",
         thumbnailUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1000&auto=format&fit=crop",
         videoUrl: "",
         duration: "Automático"
