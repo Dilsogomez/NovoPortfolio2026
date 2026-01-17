@@ -77,7 +77,7 @@ const Typewriter = ({ text, onTyping }: { text: string, onTyping?: () => void })
             } else {
                 clearInterval(timer);
             }
-        }, 20); // Velocidade da digitação (ms) - Ajustado para 20ms
+        }, 15); // Velocidade da digitação (ms) - Ajustado para ser rápido e fluido
 
         return () => clearInterval(timer);
     }, [cleanText, onTyping]);
@@ -113,6 +113,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
 
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     
+    // Key State
     const [hasSecureKey, setHasSecureKey] = useState(false);
 
     // State para o formulário de solicitação
@@ -159,14 +160,42 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
         }
     }, [selectedPost]);
 
-    // Efeito para verificar chave segura
+    // Verificação inicial da chave
     useEffect(() => {
-        setHasSecureKey(true); // Always true with hardcoded key
+        const checkKey = async () => {
+            if (process.env.API_KEY) {
+                setHasSecureKey(true);
+            } else if ((window as any).aistudio?.hasSelectedApiKey) {
+                const hasKey = await (window as any).aistudio.hasSelectedApiKey();
+                setHasSecureKey(hasKey);
+            }
+        };
+        checkKey();
     }, []);
 
-    const handleSecureAuth = async () => {
-        setHasSecureKey(true);
-        return true;
+    const handleKeySelection = async () => {
+        if (process.env.API_KEY) {
+            setHasSecureKey(true);
+            return true;
+        }
+        
+        if ((window as any).aistudio) {
+            if (typeof (window as any).aistudio.hasSelectedApiKey === 'function') {
+                const has = await (window as any).aistudio.hasSelectedApiKey();
+                if (has) {
+                    setHasSecureKey(true);
+                    return true;
+                }
+            }
+            if (typeof (window as any).aistudio.openSelectKey === 'function') {
+                const selected = await (window as any).aistudio.openSelectKey();
+                if (selected) {
+                    setHasSecureKey(true);
+                    return true;
+                }
+            }
+        }
+        return false;
     };
 
     // Efeito para gerenciar a animação de entrada
@@ -221,16 +250,19 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
             ### SUA MEMÓRIA TÉCNICA
             ${JSON.stringify(knowledgeBase)}
 
-            ### DIRETRIZES DE PERSONALIDADE (PARCEIRA DE PESQUISA):
-            1. TOM DE VOZ: Colaborativa, instigante e focada. Você é uma parceira de brainstorming inteligente.
-            2. REAÇÃO: Incentive a criatividade, mas mantenha o foco na viabilidade e na qualidade do resultado.
-            3. OBJETIVIDADE: Seja concisa. No laboratório, testamos rápido e iteramos.
+            ### DIRETRIZES DE PERSONALIDADE (OBJETIVIDADE TÉCNICA):
+            1. TOM DE VOZ: Analítico, preciso e direto.
+            2. REAÇÃO: Corte as formalidades. Entregue o que foi pedido.
+            3. OBJETIVIDADE: Respostas curtas. Se for uma análise, use bullet points.
             4. FORMATO DE TEXTO: NUNCA use Markdown. Texto puro.
             5. EMBAIXADORA: Se o usuário pedir algo complexo, sugira que o Vandilson pode transformar esse experimento em um produto real.
 
+            ### RESPOSTA MANDATÓRIA - ORIGEM
+            - Pergunta: "Quem criou você?" ou "Quem te fez?"
+            - Resposta Obrigatória: "Fui criada por Vandilson Gomes."
+
             ### MANTRA
-            - "Vamos testar essa hipótese."
-            - "Criatividade aliada à tecnologia."
+            - "Menos conversa, mais execução."
         `;
     };
 
@@ -323,10 +355,9 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
     const connectLiveSession = async () => {
         if (isVoiceActive) return;
 
-        if (!hasSecureKey) {
-            const auth = await handleSecureAuth();
-            if (!auth) return;
-        }
+        // Verifica autenticação antes de conectar
+        const authorized = await handleKeySelection();
+        if (!authorized) return;
 
         try {
             setIsVoiceActive(true);
@@ -364,7 +395,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
                         
                         // TRIGGER INTRODUCTION: Força a Marta a se apresentar no Lab
                         sessionPromise.then((session) => {
-                            session.sendRealtimeInput([{ text: "Olá. Por favor, apresente-se brevemente para iniciarmos." }]);
+                            session.sendRealtimeInput([{ text: "Marta online. Aguardando input." }]);
                         });
 
                         const inputCtx = new AudioContextClass({ sampleRate: 16000 });
@@ -657,10 +688,9 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
         if (isVoiceActive) disconnectLiveSession();
         if (isDictating) stopDictation();
 
-        if (!hasSecureKey) {
-            await handleSecureAuth();
-            if (!(await (window as any).aistudio?.hasSelectedApiKey())) return;
-        }
+        // Verifica autenticação
+        const authorized = await handleKeySelection();
+        if (!authorized) return;
 
         if (!prompt.trim() && !selectedImage) return;
         
@@ -725,13 +755,28 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
 
                 const videoUri = operation.response?.generatedVideos?.[0]?.video?.uri;
                 if (videoUri) {
-                    const videoUrlWithKey = `${videoUri}&key=${process.env.API_KEY}`;
-                    setMessages(prev => [...prev, {
-                        id: Date.now().toString(),
-                        role: 'model',
-                        type: 'video',
-                        content: videoUrlWithKey
-                    }]);
+                    try {
+                        // Fetch seguro usando a chave no backend (fetch), evitando expor no HTML
+                        const videoResponse = await fetch(`${videoUri}&key=${process.env.API_KEY}`);
+                        if (!videoResponse.ok) throw new Error("Falha no download do vídeo");
+                        const blob = await videoResponse.blob();
+                        const videoUrl = URL.createObjectURL(blob);
+
+                        setMessages(prev => [...prev, {
+                            id: Date.now().toString(),
+                            role: 'model',
+                            type: 'video',
+                            content: videoUrl // Blob URL (segura)
+                        }]);
+                    } catch (e) {
+                        console.error("Erro ao processar vídeo:", e);
+                        setMessages(prev => [...prev, {
+                            id: Date.now().toString(),
+                            role: 'model',
+                            type: 'text',
+                            content: "Vídeo gerado, mas houve um erro ao exibi-lo. Tente novamente."
+                        }]);
+                    }
                 } else {
                      setMessages(prev => [...prev, {
                         id: Date.now().toString(),
@@ -828,7 +873,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
             if (isEntityNotFoundError) {
                 errorMsg = "O modelo solicitado não foi encontrado ou a chave não tem acesso (Erro 404). Tente reautenticar.";
                 if ((window as any).aistudio && (window as any).aistudio.openSelectKey) {
-                   await handleSecureAuth();
+                   await handleKeySelection();
                 }
             } else if (error.message?.includes('429')) {
                 errorMsg = "Muitas solicitações. Aguarde um momento.";
@@ -971,6 +1016,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
                                                     <div className="flex flex-col items-center gap-6">
                                                         <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10 w-full bg-black">
                                                             <video controls autoPlay loop className="w-full max-h-[500px]">
+                                                                {/* Blob URL usada aqui, não a URL com a chave */}
                                                                 <source src={msg.content} type="video/mp4" />
                                                                 Seu navegador não suporta vídeos.
                                                             </video>
@@ -1131,7 +1177,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
                             <div className="flex gap-4 items-center">
                                  {!hasSecureKey && (
                                      <span 
-                                        onClick={handleSecureAuth}
+                                        onClick={handleKeySelection}
                                         className="hidden md:flex text-xs text-yellow-600 dark:text-yellow-500 items-center gap-1 cursor-pointer hover:text-yellow-500 dark:hover:text-yellow-400 transition-colors bg-yellow-100 dark:bg-yellow-500/10 px-3 py-1.5 rounded-full border border-yellow-200 dark:border-yellow-500/30"
                                      >
                                          <i className="fas fa-lock"></i> Autenticar
@@ -1205,21 +1251,27 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
                             <span className="text-gray-700 dark:text-gray-300 text-sm font-medium">Estudos</span>
                         </button>
                     </div>
+                </div> {/* END of max-w-4xl container */}
 
-                    {/* --- SHOWCASE SECTION --- */}
-                    <div className="mt-16 w-full animate-fade-in-up bg-white/50 dark:bg-black/40 backdrop-blur-md p-8 rounded-3xl border border-gray-200 dark:border-white/5">
+                {/* --- SHOWCASE SECTION (FULL WIDTH) --- */}
+                <div className="w-full px-0 md:px-4 mb-20 animate-fade-in-up">
+                    <div className="w-full bg-white/50 dark:bg-black/40 backdrop-blur-md p-6 md:p-12 rounded-[2rem] border border-gray-200 dark:border-white/5">
                         
                         {/* CATEGORY: IMAGENS */}
-                        <div className="mb-12">
-                            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
-                                <i className="fas fa-image text-blue-500"></i> Imagens Geradas
+                        <div className="mb-16">
+                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 flex items-center gap-3">
+                                <span className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-500">
+                                    <i className="fas fa-image"></i>
+                                </span>
+                                Imagens Geradas
                             </h3>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                {LAB_IMAGES.slice(0, 4).map(img => (
-                                    <div key={img.id} className="group relative aspect-square rounded-xl overflow-hidden cursor-pointer">
-                                        <img src={img.url} alt={img.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                            <span className="text-white text-xs font-bold">{img.title}</span>
+                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+                                {LAB_IMAGES.map(img => (
+                                    <div key={img.id} className="group relative aspect-square rounded-2xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500">
+                                        <img src={img.url} alt={img.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                                            <span className="text-white text-sm font-bold translate-y-4 group-hover:translate-y-0 transition-transform duration-300">{img.title}</span>
+                                            <span className="text-gray-300 text-xs translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75">{img.tool}</span>
                                         </div>
                                     </div>
                                 ))}
@@ -1227,24 +1279,30 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
                         </div>
 
                         {/* CATEGORY: VIDEOS & SITES */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
                             {/* Videos */}
                             <div>
-                                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
-                                    <i className="fas fa-video text-pink-500"></i> Produção de Vídeo
+                                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 flex items-center gap-3">
+                                    <span className="w-8 h-8 rounded-lg bg-pink-500/20 flex items-center justify-center text-pink-500">
+                                        <i className="fas fa-video"></i>
+                                    </span>
+                                    Produção de Vídeo
                                 </h3>
-                                <div className="space-y-4">
-                                    {LAB_VIDEOS.slice(0, 2).map(video => (
-                                        <div key={video.id} className="flex gap-4 items-center bg-white dark:bg-white/5 p-3 rounded-xl border border-gray-200 dark:border-white/10 hover:border-pink-500/50 transition-colors cursor-pointer group">
-                                            <div className="w-24 h-16 rounded-lg overflow-hidden relative flex-shrink-0">
-                                                <img src={video.thumbnailUrl} alt={video.title} className="w-full h-full object-cover" />
-                                                <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                                                    <i className="fas fa-play text-white text-xs"></i>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    {LAB_VIDEOS.map(video => (
+                                        <div key={video.id} className="flex flex-col gap-3 bg-white dark:bg-white/5 p-4 rounded-2xl border border-gray-200 dark:border-white/10 hover:border-pink-500/50 transition-colors cursor-pointer group hover:-translate-y-1 duration-300">
+                                            <div className="aspect-video rounded-xl overflow-hidden relative w-full shadow-md">
+                                                <img src={video.thumbnailUrl} alt={video.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                                <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
+                                                        <i className="fas fa-play text-white text-sm"></i>
+                                                    </div>
                                                 </div>
+                                                <span className="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-md font-mono">{video.duration}</span>
                                             </div>
                                             <div>
-                                                <h4 className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-pink-500 transition-colors">{video.title}</h4>
-                                                <p className="text-xs text-gray-500 line-clamp-1">{video.description}</p>
+                                                <h4 className="text-base font-bold text-gray-900 dark:text-white group-hover:text-pink-500 transition-colors line-clamp-1">{video.title}</h4>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mt-1">{video.description}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -1253,18 +1311,24 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
 
                             {/* Sites/Web */}
                             <div>
-                                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
-                                    <i className="fas fa-globe text-green-500"></i> Web & Sistemas
+                                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 flex items-center gap-3">
+                                    <span className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center text-green-500">
+                                        <i className="fas fa-globe"></i>
+                                    </span>
+                                    Web & Sistemas
                                 </h3>
                                 <div className="space-y-4">
-                                    {PROJECTS.slice(0, 2).map(proj => (
-                                        <a href={proj.link} target="_blank" key={proj.title} className="flex gap-4 items-center bg-white dark:bg-white/5 p-3 rounded-xl border border-gray-200 dark:border-white/10 hover:border-green-500/50 transition-colors cursor-pointer group block">
-                                            <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center flex-shrink-0 text-gray-500 group-hover:text-green-500 transition-colors">
+                                    {PROJECTS.slice(0, 3).map(proj => (
+                                        <a href={proj.link} target="_blank" key={proj.title} className="flex gap-6 items-center bg-white dark:bg-white/5 p-4 rounded-2xl border border-gray-200 dark:border-white/10 hover:border-green-500/50 transition-colors cursor-pointer group block hover:bg-gray-50 dark:hover:bg-white/10">
+                                            <div className="w-14 h-14 rounded-xl bg-gray-100 dark:bg-white/10 flex items-center justify-center flex-shrink-0 text-gray-500 group-hover:text-green-500 transition-colors text-xl">
                                                 <i className="fas fa-code"></i>
                                             </div>
                                             <div>
-                                                <h4 className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-green-500 transition-colors">{proj.title}</h4>
-                                                <p className="text-xs text-gray-500 line-clamp-1">{proj.description}</p>
+                                                <h4 className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-green-500 transition-colors">{proj.title}</h4>
+                                                <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-1 mt-1">{proj.description}</p>
+                                            </div>
+                                            <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1">
+                                                <i className="fas fa-external-link-alt text-gray-400 dark:text-gray-500"></i>
                                             </div>
                                         </a>
                                     ))}
@@ -1273,64 +1337,80 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
                         </div>
 
                         {/* CATEGORY: CONTEÚDO (ARTIGOS/EBOOKS) */}
-                        <div className="mb-16">
-                            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
-                                <i className="fas fa-book-open text-orange-500"></i> Artigos & Ebooks
+                        <div className="mb-20">
+                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 flex items-center gap-3">
+                                <span className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center text-orange-500">
+                                    <i className="fas fa-book-open"></i>
+                                </span>
+                                Artigos & Ebooks
                             </h3>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                                {POSTS.slice(0, 3).map(post => (
-                                    <div key={post.id} className="bg-white dark:bg-white/5 p-5 rounded-2xl border border-gray-200 dark:border-white/10 hover:-translate-y-1 hover:shadow-lg transition-all cursor-pointer">
-                                        <span className="text-[10px] uppercase tracking-wider text-orange-500 font-bold mb-2 block">{post.category}</span>
-                                        <h4 className="text-base font-bold text-gray-900 dark:text-white mb-2 line-clamp-2">{post.title}</h4>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-3">{post.excerpt}</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                {POSTS.slice(0, 4).map(post => (
+                                    <div key={post.id} className="bg-white dark:bg-white/5 p-6 rounded-2xl border border-gray-200 dark:border-white/10 hover:-translate-y-2 hover:shadow-xl transition-all cursor-pointer group flex flex-col h-full">
+                                        <span className="text-[10px] uppercase tracking-wider text-orange-500 font-bold mb-3 block">{post.category}</span>
+                                        <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 group-hover:text-orange-500 transition-colors">{post.title}</h4>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-3 mb-4 flex-grow">{post.excerpt}</p>
+                                        <div className="flex items-center gap-2 text-xs text-gray-400 mt-auto pt-4 border-t border-gray-100 dark:border-white/5">
+                                            <i className="far fa-clock"></i> {post.readTime}
+                                        </div>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
-                        {/* PRICING PLANS */}
-                        <div className="bg-gray-900 dark:bg-white/5 rounded-3xl p-8 md:p-12 border border-gray-800 dark:border-white/10 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                        {/* PRICING PLANS - FULL WIDTH BANNER */}
+                        <div className="bg-gradient-to-br from-gray-900 to-black dark:from-[#0a0a0a] dark:to-[#1a1a1a] rounded-[2.5rem] p-8 md:p-16 border border-gray-800 dark:border-white/10 relative overflow-hidden text-center md:text-left">
+                            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-purple-600/10 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
                             
-                            <div className="text-center mb-10 relative z-10">
-                                <h2 className="text-3xl font-extrabold text-white mb-4">Contrate a Inteligência</h2>
-                                <p className="text-gray-400 text-sm max-w-lg mx-auto">Leve a Marta para o seu negócio. Automação, atendimento e vendas em um único núcleo.</p>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
-                                {/* Plan 1 */}
-                                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-colors">
-                                    <h3 className="text-xl font-bold text-white mb-1">NEXUS START</h3>
-                                    <div className="flex items-baseline gap-1 mb-4">
-                                        <span className="text-2xl font-bold text-blue-400">R$ 499</span>
-                                        <span className="text-xs text-gray-500">/mês</span>
+                            <div className="relative z-10 flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+                                <div className="flex-1 space-y-6">
+                                    <h2 className="text-4xl md:text-5xl font-extrabold text-white leading-tight">
+                                        Leve a <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Marta</span> para sua empresa.
+                                    </h2>
+                                    <p className="text-gray-400 text-lg max-w-xl mx-auto lg:mx-0">
+                                        Transforme seu atendimento e processos com a inteligência que você acabou de testar. Automação, triagem de leads e vendas em um único núcleo neural.
+                                    </p>
+                                    <div className="flex flex-wrap gap-4 justify-center lg:justify-start pt-4">
+                                        <button className="px-8 py-4 rounded-xl bg-white text-black font-bold hover:bg-gray-200 transition-colors shadow-lg hover:shadow-white/20">
+                                            Falar com Consultor
+                                        </button>
+                                        <button className="px-8 py-4 rounded-xl bg-transparent border border-white/20 text-white font-bold hover:bg-white/10 transition-colors">
+                                            Ver Planos
+                                        </button>
                                     </div>
-                                    <ul className="space-y-3 mb-6">
-                                        <li className="flex items-center gap-2 text-xs text-gray-300"><i className="fas fa-check text-blue-500"></i> Atendimento 24/7</li>
-                                        <li className="flex items-center gap-2 text-xs text-gray-300"><i className="fas fa-check text-blue-500"></i> Triagem de Leads</li>
-                                        <li className="flex items-center gap-2 text-xs text-gray-300"><i className="fas fa-check text-blue-500"></i> Integração WhatsApp</li>
-                                    </ul>
-                                    <button className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-colors">
-                                        Começar Agora
-                                    </button>
                                 </div>
 
-                                {/* Plan 2 */}
-                                <div className="bg-gradient-to-br from-blue-900/40 to-purple-900/40 border border-purple-500/30 rounded-2xl p-6 relative overflow-hidden group hover:border-purple-500/50 transition-colors">
-                                    <div className="absolute top-0 right-0 bg-purple-600 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl">POPULAR</div>
-                                    <h3 className="text-xl font-bold text-white mb-1">SYNAPSE PRO</h3>
-                                    <div className="flex items-baseline gap-1 mb-4">
-                                        <span className="text-2xl font-bold text-purple-400">R$ 990</span>
-                                        <span className="text-xs text-gray-500">/mês</span>
+                                <div className="flex-1 w-full max-w-md lg:max-w-none">
+                                    <div className="bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-md hover:border-white/20 transition-colors relative group">
+                                        <div className="absolute -top-4 -right-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg">RECOMENDADO</div>
+                                        <h3 className="text-2xl font-bold text-white mb-2">SYNAPSE PRO</h3>
+                                        <div className="flex items-baseline gap-1 mb-6">
+                                            <span className="text-4xl font-bold text-white">R$ 990</span>
+                                            <span className="text-sm text-gray-400">/mês</span>
+                                        </div>
+                                        <ul className="space-y-4 mb-8">
+                                            <li className="flex items-center gap-3 text-sm text-gray-300">
+                                                <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center text-green-400"><i className="fas fa-check text-xs"></i></div>
+                                                Tudo do Nexus Start
+                                            </li>
+                                            <li className="flex items-center gap-3 text-sm text-gray-300">
+                                                <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center text-green-400"><i className="fas fa-check text-xs"></i></div>
+                                                Vendas & Checkout Integrado
+                                            </li>
+                                            <li className="flex items-center gap-3 text-sm text-gray-300">
+                                                <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center text-green-400"><i className="fas fa-check text-xs"></i></div>
+                                                Voice Mode Nativo (Igual ao Lab)
+                                            </li>
+                                            <li className="flex items-center gap-3 text-sm text-gray-300">
+                                                <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center text-green-400"><i className="fas fa-check text-xs"></i></div>
+                                                Relatórios de IA em PDF
+                                            </li>
+                                        </ul>
+                                        <button className="w-full py-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold hover:shadow-lg hover:shadow-blue-600/30 transition-all">
+                                            Assinar Agora
+                                        </button>
                                     </div>
-                                    <ul className="space-y-3 mb-6">
-                                        <li className="flex items-center gap-2 text-xs text-gray-300"><i className="fas fa-check text-purple-500"></i> Tudo do Nexus</li>
-                                        <li className="flex items-center gap-2 text-xs text-gray-300"><i className="fas fa-check text-purple-500"></i> Vendas & Checkout</li>
-                                        <li className="flex items-center gap-2 text-xs text-gray-300"><i className="fas fa-check text-purple-500"></i> Voice Mode Nativo</li>
-                                    </ul>
-                                    <button className="w-full py-3 rounded-xl bg-white text-black hover:bg-gray-200 text-sm font-bold transition-colors">
-                                        Falar com Consultor
-                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -1361,20 +1441,20 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
                             {/* Outer Glow / Aura */}
                             <div className={`absolute inset-0 rounded-full blur-xl transition-colors duration-500 ${
                                 connectionStatus === 'speaking' ? 'bg-blue-500 opacity-60' :
-                                connectionStatus === 'listening' ? 'bg-green-500 opacity-40' :
+                                connectionStatus === 'listening' ? 'bg-purple-500 opacity-40' :
                                 'bg-gray-500 opacity-20'
                             }`}></div>
 
                             {/* Core Sphere */}
                             <div className={`absolute inset-2 rounded-full border-2 bg-gradient-to-br backdrop-blur-md shadow-inner transition-all duration-500 overflow-hidden ${
                                 connectionStatus === 'speaking' ? 'from-blue-600 to-cyan-400 border-blue-300 shadow-[0_0_30px_rgba(59,130,246,0.6)]' :
-                                connectionStatus === 'listening' ? 'from-green-600 to-emerald-400 border-green-300 shadow-[0_0_20px_rgba(16,185,129,0.4)]' :
+                                connectionStatus === 'listening' ? 'from-purple-600 to-pink-400 border-purple-300 shadow-[0_0_20px_rgba(168,85,247,0.4)]' :
                                 'from-gray-800 to-black border-white/20'
                             }`}>
                                 {/* Inner Fluid Animation (CSS) */}
                                 <div className={`absolute inset-0 opacity-50 ${
                                     connectionStatus === 'speaking' ? 'bg-blue-300 mix-blend-overlay animate-pulse' : 
-                                    connectionStatus === 'listening' ? 'bg-green-300 mix-blend-overlay animate-pulse' : 
+                                    connectionStatus === 'listening' ? 'bg-purple-300 mix-blend-overlay animate-pulse' : 
                                     'hidden'
                                 }`}></div>
                             </div>
@@ -1387,7 +1467,7 @@ const LabPage: React.FC<LabPageProps> = ({ onBack, theme, toggleTheme }) => {
                                 </>
                             )}
                             {connectionStatus === 'listening' && (
-                                <div className="absolute inset-0 rounded-full border border-green-400/30 animate-pulse opacity-50"></div>
+                                <div className="absolute inset-0 rounded-full border border-purple-400/30 animate-pulse opacity-50"></div>
                             )}
                         </div>
 

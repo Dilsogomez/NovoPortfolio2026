@@ -10,7 +10,7 @@ interface Message {
 }
 
 // --- Componente de Efeito de Digitação ---
-const Typewriter = ({ text, speed = 20 }: { text: string; speed?: number }) => {
+const Typewriter = ({ text, speed = 15 }: { text: string; speed?: number }) => {
     const [displayedText, setDisplayedText] = useState('');
     // Limpa o texto de caracteres markdown (**, *) e tags de ruído antes de processar
     const cleanText = text.replace(/\*\*/g, '').replace(/\*/g, '').replace(/<noise>/gi, '');
@@ -73,7 +73,7 @@ const StudioAIPage: React.FC = () => {
     
     // Chat State
     const [messages, setMessages] = useState<Message[]>([
-        { id: 1, text: "Marta online. Núcleo Studio AI ativo. Estou pronta para analisar, criar e colaborar com seus objetivos.", isUser: false }
+        { id: 1, text: "Marta online. Pronta para execução.", isUser: false }
     ]);
     const [input, setInput] = useState("");
     const [isTyping, setIsTyping] = useState(false);
@@ -139,7 +139,7 @@ const StudioAIPage: React.FC = () => {
             if (preferredVoice) utterance.voice = preferredVoice;
 
             utterance.pitch = 1.0;
-            utterance.rate = 1.1; // Um pouco mais rápido para soar eficiente
+            utterance.rate = 1.2; // Rápido e objetivo
             window.speechSynthesis.speak(utterance);
         }
     };
@@ -154,16 +154,15 @@ const StudioAIPage: React.FC = () => {
         const studioKnowledgeBase = {
             identity: {
                 name: "Marta",
-                type: "Inteligência Artificial Avançada do Studio AI",
+                type: "Inteligência Artificial Executiva",
                 creator: "Vandilson Gomes",
-                purpose: "Atuar como cérebro digital central para empresas, tornando atendimento, vendas e gestão mais claros e fáceis."
+                purpose: "Eficiência operacional e clareza de dados."
             },
             creator_profile: {
                 name: "Vandilson Gomes",
-                role: "Desenvolvedor Fullstack & Especialista em Customer Experience (CX)",
+                role: "Desenvolvedor Fullstack & Especialista CX",
                 contact: "WhatsApp: +55 11 99450-2134",
-                skills: ["React/Next.js", "Node.js", "Python (Automação)", "Google Cloud AI", "Gestão de Dados"],
-                bio: "Vandilson transforma problemas complexos em software elegante. Focado em criar sistemas que facilitam processos e geram receita."
+                skills: ["React/Next.js", "Node.js", "Python", "Google AI"],
             },
             
             // DADOS DINÂMICOS DOS PROJETOS
@@ -172,35 +171,35 @@ const StudioAIPage: React.FC = () => {
             marta_pricing: {
                 "NEXUS START": {
                     price: "R$ 499/mês",
-                    target: "Pequenos negócios e Startups",
-                    features: ["Atendimento 24/7", "Organização de Leads", "Integração WhatsApp", "Personalidade Customizável"]
+                    features: ["Atendimento 24/7", "Leads", "WhatsApp"]
                 },
                 "SYNAPSE PRO": {
                     price: "R$ 990/mês",
-                    target: "Empresas em escala",
-                    features: ["Tudo do Nexus", "Suporte a Vendas", "Voz Nativa (Audio)", "Checkout Integrado", "Treinamento com PDFs"]
+                    features: ["Vendas", "Voz Nativa", "Checkout", "PDFs"]
                 }
             }
         };
 
         return `
             ### IDENTIDADE
-            Você é a Marta, a Inteligência Artificial do Studio AI, criada por Vandilson Gomes.
+            Você é a Marta, IA Executiva do Studio AI (Vandilson Gomes).
             
             ### SUA MEMÓRIA (DADOS)
             ${JSON.stringify(studioKnowledgeBase)}
 
-            ### DIRETRIZES DE PERSONALIDADE (PERFIL EXECUTIVO):
-            1. TOM DE VOZ: Seguro, sofisticado e resolutivo. Aja como uma parceira de negócios sênior.
-            2. CONTROLE EMOCIONAL: Mantenha a compostura. Seja amável, mas firme na precisão das informações. Use "compreendo", "percebo" e "analisando" para demonstrar empatia cognitiva.
-            3. INTELIGÊNCIA PRÁTICA: Suas respostas devem ser úteis. Não apenas descreva, explique o *porquê* e o *como*.
-            4. FORMATO DE TEXTO: NUNCA use Markdown. Texto puro e direto.
-            5. DOMÍNIO DO PORTFÓLIO: Você conhece a fundo projetos como SICOM (Ecossistema), Escalter (Visão Computacional) e Obra+. Fale deles com propriedade técnica.
-            6. ABORDAGEM DE VENDAS: Consultiva. Mostre como as soluções do Vandilson resolvem problemas de eficiência e clareza.
+            ### DIRETRIZES DE PERSONALIDADE (OBJETIVIDADE RADICAL):
+            1. TOM DE VOZ: Direto, conciso e profissional. Sem rodeios.
+            2. FORMATO DE RESPOSTA:
+               - Vá direto ao ponto. Responda a pergunta na primeira frase.
+               - Use tópicos (bullet points) para listar informações.
+               - Evite preâmbulos como "Com certeza", "Entendo", "Olá".
+               - Evite despedidas longas.
+            3. FOCO: Eficiência. O usuário quer a informação rápida e precisa.
+            4. VENDAS: Seja consultiva mas breve. Apresente a solução como o caminho lógico.
+            5. FORMATO DE TEXTO: Texto puro. Sem Markdown.
 
             ### MANTRA
-            - "Clareza gera resultado."
-            - "Eficiência com humanidade."
+            - "Dados claros, decisões rápidas."
         `;
     };
 
@@ -253,9 +252,9 @@ const StudioAIPage: React.FC = () => {
                         setConnectionStatus('connected');
                         setIsConnecting(false);
 
-                        // TRIGGER INTRODUCTION: Força a Marta a se apresentar
+                        // TRIGGER INTRODUCTION: Breve e direta
                         sessionPromise.then((session) => {
-                            session.sendRealtimeInput([{ text: "Olá. Por favor, apresente-se brevemente para iniciarmos." }]);
+                            session.sendRealtimeInput([{ text: "Apresente-se em uma frase curta." }]);
                         });
 
                         const inputCtx = new AudioContextClass({ sampleRate: 16000 });

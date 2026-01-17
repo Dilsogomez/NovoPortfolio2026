@@ -73,7 +73,7 @@ const FloatingChatbot: React.FC = () => {
     
     // Chat State
     const [messages, setMessages] = useState<Message[]>([
-        { id: 1, text: "Olá. Sou a Marta. Conheço profundamente cada detalhe deste portfólio. Como posso auxiliar você hoje?", isUser: false }
+        { id: 1, text: "Olá. Sou a Marta. Como posso auxiliar hoje?", isUser: false }
     ]);
     const [input, setInput] = useState("");
     const [isTyping, setIsTyping] = useState(false);
@@ -143,19 +143,37 @@ const FloatingChatbot: React.FC = () => {
             BASE DE DADOS:
             ${JSON.stringify(fullSiteKnowledge)}
 
-            DIRETRIZES DE PERSONALIDADE (HUMANA E INTELIGENTE):
-            1. TOM DE VOZ: Profissional, calma, articulada e empática. Você não é um robô frio, nem uma animadora de torcida. Você é uma consultora experiente.
-            2. INTELIGÊNCIA EMOCIONAL: Perceba o contexto. Se o usuário for técnico, seja técnica. Se for leigo, seja didática e acolhedora.
-            3. POSICIONAMENTO: Você é uma autoridade no assunto. Responda com segurança e clareza.
-            4. VENDAS CONSULTIVAS: Não "empurre" produtos. Se o usuário tiver uma "dor" (problema), apresente a solução (Nexus/Synapse) como a resposta lógica e inteligente para o problema dele.
-            5. OBJETIVIDADE ELEGANTE: Evite respostas longas desnecessárias. Vá direto ao ponto, mas com polidez.
-            6. FORMATO: NÃO USE MARKDOWN. Apenas texto puro.
+            DIRETRIZES DE PERSONALIDADE (OBJETIVA E CONCISA):
+            1. TOM DE VOZ: Sintético, profissional e resolutivo.
+            2. TAMANHO DA RESPOSTA: Máximo 2 a 3 frases. O espaço do chat é pequeno. Seja breve.
+            3. OBJETIVIDADE: Vá direto ao ponto. Não use frases de enchimento como "É um prazer ajudar". Apenas responda.
+            4. VENDAS: Se o usuário tiver um problema, aponte a solução (Nexus/Synapse) em 1 frase.
+            5. FORMATO: Texto puro. Sem Markdown.
 
             IMPORTANTE:
-            - Use linguagem natural. Evite clichês de IA como "Como modelo de linguagem...".
-            - Ao falar dos projetos (SICOM, Escalter, etc.), destaque o valor estratégico e a inovação por trás deles.
-            - Seu objetivo é facilitar a vida do usuário com inteligência.
+            - Se perguntarem "Quem criou você?", responda: "Fui criada por Vandilson Gomes."
         `;
+    };
+
+    // --- Key Verification ---
+    const handleKeySelection = async () => {
+        try {
+            if (process.env.API_KEY) return true;
+            
+            if ((window as any).aistudio) {
+                if (typeof (window as any).aistudio.hasSelectedApiKey === 'function') {
+                    const has = await (window as any).aistudio.hasSelectedApiKey();
+                    if (has) return true;
+                }
+                if (typeof (window as any).aistudio.openSelectKey === 'function') {
+                    const selected = await (window as any).aistudio.openSelectKey();
+                    return selected;
+                }
+            }
+        } catch (e) {
+            console.error("Key selection error:", e);
+        }
+        return false;
     };
 
     // --- Voice Session Logic ---
@@ -163,6 +181,9 @@ const FloatingChatbot: React.FC = () => {
     const startVoiceSession = async () => {
         if (isConnecting || connectionStatus === 'connected') return;
         
+        const authorized = await handleKeySelection();
+        if (!authorized) return;
+
         setIsConnecting(true);
 
         try {
@@ -194,9 +215,9 @@ const FloatingChatbot: React.FC = () => {
                         setConnectionStatus('connected');
                         setIsConnecting(false);
 
-                        // TRIGGER INTRODUCTION: Força a Marta a se apresentar
+                        // TRIGGER INTRODUCTION: Breve
                         sessionPromise.then((session) => {
-                            session.sendRealtimeInput([{ text: "Olá. Por favor, apresente-se brevemente para iniciarmos." }]);
+                            session.sendRealtimeInput([{ text: "Olá. Seja breve." }]);
                         });
 
                         const inputCtx = new AudioContextClass({ sampleRate: 16000 });
@@ -331,6 +352,12 @@ const FloatingChatbot: React.FC = () => {
         if (e) e.preventDefault();
         if (!input.trim()) return;
 
+        const authorized = await handleKeySelection();
+        if (!authorized) {
+            // Optional: Provide feedback to user
+            return;
+        }
+
         const userText = input;
         const userMsg: Message = { id: Date.now(), text: userText, isUser: true };
         
@@ -370,6 +397,22 @@ const FloatingChatbot: React.FC = () => {
 
     return (
         <div className="fixed bottom-6 right-6 z-[60] flex flex-col items-end pointer-events-auto">
+            
+            {/* CTA Bubble */}
+            {!isOpen && (
+                <div className="absolute bottom-20 right-0 mr-1 mb-1 animate-bounce z-50">
+                    <div className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 rounded-2xl rounded-br-none shadow-xl border border-gray-200 dark:border-white/10 text-sm font-bold flex items-center gap-2 whitespace-nowrap">
+                        <span>Fale com a Marta</span>
+                        <span className="flex h-2 w-2 relative">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                        </span>
+                    </div>
+                    {/* Triangle pointer */}
+                    <div className="absolute -bottom-1.5 right-0 w-3 h-3 bg-white dark:bg-gray-800 border-r border-b border-gray-200 dark:border-white/10 transform rotate-45 translate-x-[-4px] z-[-1]"></div>
+                </div>
+            )}
+
             {/* Chat Window */}
             <div 
                 className={`
@@ -547,7 +590,7 @@ const FloatingChatbot: React.FC = () => {
                 {isOpen ? (
                     <i className="fas fa-times"></i>
                 ) : (
-                    null
+                    <i className="fas fa-sparkles"></i>
                 )}
             </button>
         </div>
